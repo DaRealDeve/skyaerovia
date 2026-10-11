@@ -1,13 +1,19 @@
-# Ayman's extractor fixes - verified review
+# Ayman's extractor fixes — verified review
 
-Reviewed on 11 October 2026. The attachment extractor..py is stored as extractor.py. No real API key was found in the supplied code.
+Reviewed on 12 October 2026. The supplied extractor..py is stored as extractor.py. Ayman's extractor fixes preserve the team's seven-field contract, context replies, Hinglish/typos, explicit stops-allowed preferences and rejected-date/budget diagnostics.
 
-Ayman's supplied tests were reproduced: 31 passed, one live test skipped. He fixed the agreed output, context replies, Hinglish/typos, explicit stops-allowed preferences and rejected-date/budget diagnostics.
+Tarun/Codex added review corrections for fallback metadata, unsupported sorting and follow-up choices, nonfinite budgets, clear-date correction and credential-safe exception diagnostics. Ayman then uploaded the updated live test that reads an environment key or the ignored local secrets file.
 
-Tarun/Codex added six review regressions and corrections: preserve public fallback metadata; signal unsupported sorting and accept price/duration replies; reject nonfinite AI budgets; correct AI date miscalculations from explicit message dates; keep provider exception bodies out of logs/diagnostics; remove an unverified model-retirement comment.
+The uploaded live test reverted to the offline fixture date. Review corrected it to use the current IST date and added a regression that simulates a different year. Offline fixtures remain fixed at 2026-10-11.
 
-Fixes branch validation: 49 tests run, 48 passed and one live test skipped (11 search, 31 supplied offline extractor and 6 review tests).
+## Validation on 12 October
 
-Combined integration validation: 74 tests run, 73 passed and one live test skipped. All 50 specified offline chat cases pass. Integration now reads result.problems, clears rejected saved fields and asks for valid dates/budgets/sorting choices. Integration changes live in the separate integration draft.
+- Extractor/search suite: 50 tests run; 49 passed, one live test skipped on Tarun's review machine.
+- Combined integration suite: 75 tests run; 74 passed, one live test skipped.
+- Conversation retest: 50/50 deterministic offline cases passed, with unchanged expectations.
+- Ayman's terminal screenshot from 11 October shows one real Gemini test passing: model gemini-3.5-flash, source=ai, Bengaluru to Kolkata, date 2026-10-12, cheapest/nonstop, and no skipped test.
+- Tarun relayed Ayman's confirmation that the old exposed key was deleted. This is the key owner's confirmation, not an independently inspected account setting.
 
-Live Gemini is PENDING a private replacement key. No exposed key was used. Network/quota/timeout/malformed-response tests use mocks. Fixed offline reference date: 2026-10-11. Yearless dates use the current year and past dates are not silently moved to next year. Ambiguous past-tense kal/parso asks for clarification.
+No API key was copied, published or used on Tarun's review machine. Ayman's successful request establishes his key/model connection at that time; it does not prove the shared app's separate key, quota or deployed behavior. The newly corrected current-date live test has only been checked with mocks here.
+
+Ayman's assigned implementation and submission are complete, subject to review. Integration consumes result.problems, clears rejected saved fields and prompts for corrections. Full-app acceptance awaits the team's flight data, final frontend integration and the shared app's private API setup.

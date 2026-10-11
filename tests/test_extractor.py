@@ -444,13 +444,14 @@ class TestGeminiPath(OfflineTestCase):
 class TestLiveGemini(unittest.TestCase):
     def test_real_gemini_answers(self):
         with mock.patch.dict(os.environ, {"GEMINI_API_KEY": LIVE_KEY}):
-            result, source = _extract("cheapest nonstop flight from Bangalore to Calcutta tomorrow", T)
+            live_today = extractor._as_date(None)
+            result, source = _extract("cheapest nonstop flight from Bangalore to Calcutta tomorrow", live_today)
         reason = (result.ai_error or "").replace(LIVE_KEY, "[KEY HIDDEN]")  # never show the key
         print(f"\n  model={extractor.MODEL} source={source} result={dict(result)} problems={result.problems}")
         self.assertEqual(source, "ai", f"Gemini did not answer. Reason: {reason}")
         self.assertEqual(result["intent"], "cheapest")
         self.assertEqual((result["origin"], result["destination"]), ("Bengaluru", "Kolkata"))
-        self.assertEqual(result["date"], TOMORROW)
+        self.assertEqual(result["date"], (live_today + extractor.timedelta(days=1)).isoformat())
         self.assertEqual(result["sort_by"], "price")
         self.assertIs(result["non_stop"], True)
 
