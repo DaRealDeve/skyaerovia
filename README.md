@@ -1,40 +1,75 @@
 # SkyAerovia
-
-**Your way through the sky** — a student flight-assistance project with **Skye**, our chatbot.
-
-Sky + Aero + Via: the sky's pathway.
+**Your way through the sky** — a student flight-assistance project featuring Skye.
 
 ## Current status
+Sakshi's search module and Ayman's original extractor are merged into main.
+This integration connects extraction, session context, validation and flight search.
+The demo cannot book tickets or process payments. All flight results are simulated.
 
-Starter Streamlit chat interface only. Gemini and flight search are not connected yet. This prototype does not issue tickets or process payments. Demo flights and statuses must be clearly marked simulated.
+Pending team deliverables:
+- Yashvardhan: root-level `flights.json` (60 flights, eight supported cities, next seven days).
+- Richa: final navy/blue interface.
+- Ayman: extractor compatibility fixes and live Gemini tests with Ayush.
+- Ayush: complete end-to-end test report.
+- Shivam: report, deck and demo after integration.
 
 ## Run locally
+Use Python 3.12. From the project folder:
 
 ```sh
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
-streamlit run app.py
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
 ```
 
-On Windows, activate with `.venv\Scripts\activate`.
+On Windows use `py -m venv .venv` and `.venv\\Scripts\\activate`.
+
+The app runs with the keyword fallback without an API key. When ready, copy
+`.streamlit/secrets.toml.example` to `.streamlit/secrets.toml` and set your key
+locally. The app passes that secret to the current extractor through the environment.
+Never upload a real key. Ayman's current client also accepts `GEMINI_MODEL` as an
+environment variable; the model and live Gemini connection still need verification.
+
+## Integration
+`app.py` calls `prepare_request` in `integration.py`, which uses
+`extract_request(message, today, context)`. Supplied fields are merged into session
+state. The app asks for missing details and calls `search_flights` with named
+arguments, a default price sort, and a boolean nonstop value.
+
+The integration accepts the original extractor intent names and the agreed names
+(`search`, `cheapest`, `help`, `unknown`) while Ayman updates his module. It
+handles date-only fallback replies and rejects past dates, unsupported cities,
+invalid budgets and unsupported departure sorting before search. Booking/status
+requests receive the demo's help explanation.
+
+Sidebar overrides are explicit; otherwise the preferences in the chat are used.
+New chat clears conversation state and results. Missing data is shown as a setup
+state, not as an empty search.
+
+## Flight data contract
+Supported cities: Delhi, Mumbai, Bengaluru, Chennai, Hyderabad, Kolkata, Pune, Ahmedabad.
+`flights.json` is a list with fields:
+`id, airline, from, to, date, departure, arrival, duration, stops, price`.
+Use unique string IDs, YYYY-MM-DD dates, HH:MM times in IST, integer minutes,
+integer stop counts and integer prices in INR. Routes must use different cities.
+The app validates the file when loading it. Keep the demo dates current.
+
+## Tests
+```sh
+python -m unittest discover -s tests -v
+```
+26 tests cover search, integration and Streamlit interactions. Tests deliberately
+disable Gemini and use temporary simulated fixtures; they do not use API keys or
+replace the team's dataset. Passing these checks does not verify the live Gemini API.
 
 ## Team workflow
+Create a branch, upload your work, open a PR into main and wait for review.
+Keep `app.py` as the entry point and import separate modules. Richa can update the
+presentation while preserving the integration calls and session-state behavior.
 
-Seven members including the repository owner. Invite the other six using their GitHub usernames. Each member accepts their invitation, creates a branch for their work, and opens a pull request for review. Keep `app.py` as the entry point; import separate modules when useful.
-
-Planned features: route/date search using SQLite sample data, cheapest-flight comparison, simulated status, curated travel FAQs, session context, missing-information prompts and graceful fallback.
-
-## Gemini integration
-
-New code should use Google's supported `google-genai` SDK. Copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml` and replace the placeholder locally. Read the key with `st.secrets["GEMINI_API_KEY"]` when implementing the Gemini client. Never commit a real key. SQLite is included with Python and needs no requirements entry.
-
-## Deploy
-
-1. Push working code to GitHub.
-2. Sign in to Streamlit Community Cloud and connect GitHub.
-3. Create an app using this repository, the `main` branch and `app.py`.
-4. In Advanced settings, add `GEMINI_API_KEY = "your-key"` to Secrets when Gemini is connected.
-5. Deploy and check the chat and reset flow.
-
-This starter can run without an API key. Add the key only when AI integration is implemented. Pin tested dependency versions before final submission.
+## Deployment handoff
+After the pending files and live API test are complete, deploy this repository's
+main branch with `app.py` on Streamlit Community Cloud. Add `GEMINI_API_KEY` in
+Streamlit Secrets. Test searches, missing details, filters, fallback and reset on the
+deployed app before using it for the final demo.
