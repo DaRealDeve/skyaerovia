@@ -2,9 +2,9 @@
 
 Result: **50/50 passed; 0 failed.**
 
-Scope: deterministic offline keyword fallback plus the draft integration adapter. Fixed reference date: 2026-10-11 (IST). No API key or live Gemini call was used. Cases check status and the listed expected fields; passing does not guarantee every possible field is correct.
+Scope: deterministic offline keyword fallback plus the integration adapter. Fixed reference date: 2026-10-11 (IST). No API key or live Gemini call was used. Cases check status and the listed expected fields; passing does not guarantee every possible field is correct.
 
-Retest after Ayman's updated extractor and integration corrections. The original baseline was 43/50. The separate unittest round ran 74 checks: 73 passed and one live test skipped. Live Gemini, the team's flight dataset, final UI and deployed-app testing remain pending.
+Retest after the extractor/frontend/data integration. The original baseline was 43/50. The separate unittest round ran 81 checks: 80 passed and one live test skipped locally. All 50 cases also pass through the complete Streamlit UI with simulated data. The shared app's private key/live check and hosted acceptance remain pending.
 
 ## Results
 
@@ -67,14 +67,4 @@ Retest after Ayman's updated extractor and integration corrections. The original
 
 Tarun and Codex cover Ayush's test preparation, execution and results reporting. Ayush remains a team member. Ayman owns extractor fixes; Tarun's integration handles validation and state. Neither the initial QA results nor the draft PR should be marked final acceptance while failures remain.
 
-After fixes: rerun this script and the unittest suite. After flight data and final UI arrive: test all cases through the app and check actual routes, dates, prices, filters and reset. After private API setup: compare live Gemini and forced fallback behavior. After deployment: repeat the user flow on the deployed app. Never put the API key in a test report or screenshot.
-
-## 12 October review
-
-Latest submitted secrets-aware test reviewed; live tests use the current IST date. All 50 offline cases passed again. Combined suite before data: 75 tests run, 74 passed, one live test skipped here. Ayman supplied terminal evidence of one real Gemini request passing on 11 October; Tarun relayed confirmation that the old key was deleted.
-
-## Flight-data acceptance — 12 October
-
-Tarun and Codex cover Yashvardhan's data work. The committed file contains 60 simulated flights, all eight supported cities and seven consecutive dates (12–18 October). Four dataset checks validate structure/unique IDs/city/date coverage, arrival-duration consistency and units, route/date/budget/nonstop/duration search, and regenerated dates across year and leap-day boundaries.
-
-The combined suite now runs 79 tests: 78 pass and one real-key test is skipped locally. An additional Streamlit check using the actual committed dataset passes: Delhi–Mumbai tomorrow returns three cards, nonstop filtering returns two, duration sorting works and New chat clears state/results. No real key was used. This checks the integration interface; Richa's final frontend and shared-app/deployment acceptance remain pending.
+Full UI/data checks are recorded in docs/ui-chat-report.md and docs/frontend-review.md. After private API setup: compare live Gemini and forced fallback behavior. After deployment: repeat the user flow on the deployed app. Never put the API key in a test report or screenshot.

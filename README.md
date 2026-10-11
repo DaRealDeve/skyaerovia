@@ -1,20 +1,10 @@
 # SkyAerovia
-**Your way through the sky** — a student flight-assistance project featuring Skye.
+**Your way through the sky** — a student flight-search assistant featuring **Skye**.
 
-## Current status
-Sakshi's search module and Ayman's reviewed extractor fixes are merged into main.
-This integration connects extraction, session context, validation and flight search.
-The demo cannot book tickets or process payments. All flight results are simulated.
-
-Current team deliverables:
-- Tarun and Codex cover Yashvardhan's flight data: root-level `flights.json` now contains 60 simulated flights, eight supported cities and seven consecutive dates. Yashvardhan remains a team member.
-- Richa: navy/blue frontend submitted in PR #5; review and backend integration remain pending.
-- Ayman: reviewed extractor merged in PR #4; his real Gemini test passed. He can support any extractor bugs found later.
-- Tarun and Codex: Ayush's 50-case QA, bug report, live API checks and final end-to-end tests. Ayush remains a team member.
-- Tarun and Codex: Shivam's report, deck, screenshots and demo. Shivam remains a team member.
+The app combines Richa's navy/blue interface, Ayman's Gemini extractor with keyword fallback, Sakshi's search logic and 60 simulated flights prepared by Tarun/Codex. It asks for missing details, retains travel preferences, filters by route/date/budget/stops and sorts by price or duration. Flight cards, the logo, loading feedback and a complete chat/filter reset are included. This demo cannot book tickets or process payments.
 
 ## Run locally
-Use Python 3.12. From the project folder:
+Use Python 3.12 from the project folder:
 
 ```sh
 python3 -m venv .venv
@@ -23,83 +13,46 @@ python -m pip install -r requirements.txt
 python -m streamlit run app.py
 ```
 
-On Windows use `py -m venv .venv` and `.venv\\Scripts\\activate`.
+On Windows, create the environment with `py -m venv .venv` and activate it with `.venv\Scripts\activate`.
 
-The app runs with the keyword fallback without an API key. When ready, copy
-`.streamlit/secrets.toml.example` to `.streamlit/secrets.toml` and set your key
-locally. The app passes that secret to the current extractor through the environment.
-Never upload a real key. The extractor also accepts `GEMINI_MODEL` as an
-environment variable. Ayman verified gemini-3.5-flash in his environment; the shared
-app's separate private key and live connection still need verification.
+The app works without an API key using the keyword fallback. For Gemini, copy `.streamlit/secrets.toml.example` to the ignored `.streamlit/secrets.toml`, fill in the key privately and restart the app. Streamlit Cloud reads the same settings from its Secrets box. Do not commit or paste a real key into chat. `GEMINI_MODEL` is optional; Ayman verified `gemini-3.5-flash` with his private replacement key. The shared app's key and deployed live behavior still need verification.
 
-## Integration
-`app.py` calls `prepare_request` in `integration.py`, which uses
-`extract_request(message, today, context)`. Supplied fields are merged into session
-state. The app asks for missing details and calls `search_flights` with named
-arguments, a default price sort, and a boolean nonstop value.
+## Flight data
+`flights.json` contains 60 fictional flights for **12–18 October 2026**, covering Delhi, Mumbai, Bengaluru, Chennai, Hyderabad, Kolkata, Pune and Ahmedabad. Airline names, schedules and fares are sample data, not bookable offers.
 
-The integration accepts the original extractor intent names and the agreed names
-(`search`, `cheapest`, `help`, `unknown`) while Ayman updates his module. It
-handles date-only fallback replies and rejects past dates, unsupported cities,
-invalid budgets and unsupported departure sorting before search. Booking/status
-requests receive the demo's help explanation.
+Fields: `id, airline, from, to, date, departure, arrival, duration, stops, price`.
+Times are HH:MM in IST; duration is integer minutes; price is integer INR; IDs are unique. Arrivals are on the departure date.
 
-Sidebar overrides are explicit; otherwise the preferences in the chat are used.
-New chat clears conversation state and results. Missing data is shown as a setup
-state, not as an empty search.
-
-## Flight data contract
-Supported cities: Delhi, Mumbai, Bengaluru, Chennai, Hyderabad, Kolkata, Pune, Ahmedabad.
-`flights.json` is a list with fields:
-`id, airline, from, to, date, departure, arrival, duration, stops, price`.
-Use unique string IDs, YYYY-MM-DD dates, HH:MM times in IST, integer minutes,
-integer stop counts and integer prices in INR. Routes must use different cities.
-The app validates the file when loading it. Keep the demo dates current.
-
-## Tests
-```sh
-python -m unittest discover -s tests -v
-```
-The combined suite runs 79 checks: 78 pass and one live Gemini test is skipped locally.
-It covers search, extractor, integration, Streamlit interactions and the API checker. Tests deliberately
-disable Gemini and use temporary simulated fixtures, plus checks of the committed
-60-flight dataset. They do not use API keys. Passing these checks does not verify the live Gemini API.
-
-## Team workflow
-Create a branch, upload your work, open a PR into main and wait for review.
-Keep `app.py` as the entry point and import separate modules. Richa can update the
-presentation while preserving the integration calls and session-state behavior.
-
-## Deployment handoff
-After the pending files and live API test are complete, deploy this repository's
-main branch with `app.py` on Streamlit Community Cloud. Add `GEMINI_API_KEY` in
-Streamlit Secrets. Test searches, missing details, filters, fallback and reset on the
-deployed app before using it for the final demo.
-
-## Conversational QA
-Run `python scripts/run_chat_checks.py` for the 50 fixed-date fallback cases.
-Initial result: 43 passed, 7 failed. See `docs/testing-report.md` for exact inputs,
-expected values and actual results. The 26 unittest checks passed separately.
-Ayman supplied a passing real Gemini test; shared-app live verification and final app/deployment acceptance remain pending.
-
-## Extractor retest
-The 50 offline conversational cases now pass 50/50 after Ayman's fixes and the
-integration corrections. The earlier baseline was 43/50. See docs/extractor-review.md
-and docs/testing-report.md. Ayman's live Gemini test passed in his environment. Shared-app live verification and full-app/deployment tests remain pending.
-
-## Latest review — 12 October 2026
-
-Ayman's updated test reads private local secrets; the current-date regression is fixed. Combined suite: 79 tests run, 78 passed, one live test skipped locally. Conversation checks: 50/50 passed. Ayman supplied a successful live Gemini screenshot, and Tarun relayed confirmation of old-key deletion. No real key is included. Tarun and Codex now cover Yashvardhan's data as well as Ayush's QA and Shivam's documentation/demo. The shared app still requires private API setup, final frontend integration and deployed acceptance. Shivam's deliverables remain deferred until technical work is ready.
-
-## Refresh simulated flights
-
-The committed data covers 12–18 October 2026. Before a later demo, run:
+Before a later demo, regenerate the next seven days and commit the updated file:
 
 ```sh
 python scripts/generate_flights.py
 ```
 
-This regenerates 60 fictional flights for today in IST through six days later.
-Commit the refreshed data and rerun the tests. The hosted app does not regenerate
-dates automatically. See `docs/flight-data.md` for the sample-data limits and units.
+The hosted app reads the committed file and displays the date range. It does not refresh dates automatically. See `docs/flight-data.md`.
+
+## Verification
+```sh
+python -m unittest discover -s tests -v
+python scripts/run_chat_checks.py
+python scripts/run_ui_chat_checks.py
+```
+
+Latest local result: **81 tests run, 80 passed, one real-key test skipped**. All **50/50** fixed-date conversation cases pass both through the integration adapter and the complete Streamlit UI. Tests cover search, extraction, validation, dataset values and dates, filters, follow-ups, reset and HTML escaping. The 50-case fixtures use 2026-10-11 intentionally; production uses today's IST date.
+
+Ayman supplied a successful real Gemini test screenshot (`source=ai`) on 11 October and Tarun relayed old-key deletion confirmation. No real key was used in the local integration review. To verify the shared app's private key without accepting fallback as success:
+
+```sh
+python scripts/check_gemini.py --live
+```
+
+See `docs/testing-report.md`, `docs/ui-chat-report.md`, `docs/frontend-review.md` and `docs/gemini-live-check.md` for scope and limits.
+
+## Deploy
+Use repository **DaRealDeve/skyaerovia**, branch **main**, entry point **app.py**, Python **3.12**, and add the private key under Streamlit Cloud **Advanced settings → Secrets**. Follow `docs/deployment.md` for sign-in, permissions, settings and hosted acceptance checks. Deployment and the shared app's live key are pending.
+
+## Team
+The team retains all seven members. Richa supplied the frontend, Sakshi the search module and Ayman the extractor. Tarun/Codex cover Yashvardhan's data, Ayush's QA/API-helper work and Shivam's report/deck/demo work. Contributions are documented without attributing our replacement work to those members.
+
+Shivam's report, slides, final screenshots and demo start after technical work and deployment checks are ready, as Tarun requested. See `docs/team-responsibilities.md`.
 
