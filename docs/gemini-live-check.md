@@ -1,18 +1,18 @@
 # Gemini connection and live test
 
-Checked on 11 October 2026 from Tarun's computer.
+## Current status — 12 October 2026
 
-- DNS resolves generativelanguage.googleapis.com.
-- Verified HTTPS through the SDK's HTTP transport reaches Google's server.
-- The unauthenticated connection check receives HTTP 403, which is expected
-  without an API key. This does not prove Gemini authentication or generation.
-- The combined suite runs 74 checks: 73 pass and one live test is skipped.
-  Other AI calls use mocks; no real key is used.
-- The 50-case fallback retest passes 50/50. The previous baseline was 43/50.
-- Live Gemini remains PENDING. Tarun confirmed the exposed key has not been
-  replaced. No exposed key was used.
+Ayman supplied a terminal screenshot of a successful real Gemini test on 11 October: gemini-3.5-flash, source=ai, one test run, OK and no skipped test. Tarun relayed Ayman's confirmation that the old exposed key was deleted. The updated secrets-aware test is on GitHub.
 
-## Run from this branch's project folder
+The review uses the current IST date for live tests; deterministic offline tests keep their fixed reference date. The combined suite runs 75 tests: 74 pass and one real-key test is skipped on Tarun's review machine. All 50 offline conversation cases pass. Ayman's private key was not shared or reused.
+
+The shared app still needs its own privately configured working key and a live check on that machine. Ayman's passing test is evidence for his environment, not the deployment.
+
+## Connectivity previously checked on Tarun's computer
+
+On 11 October DNS and verified HTTPS reached generativelanguage.googleapis.com. An unauthenticated HTTP 403 was expected. Connectivity alone does not establish authentication or generation.
+
+## Run from the project folder
 
 Use Python 3.12 with requirements.txt installed.
 
@@ -20,32 +20,18 @@ Use Python 3.12 with requirements.txt installed.
 python scripts/check_gemini.py
 ```
 
-This command tests DNS/HTTPS and sends no key or chat message.
-
-After the key owner creates a replacement in Google AI Studio, save the new key
-privately in GEMINI_API_KEY or .streamlit/secrets.toml. Do not send it in chat,
-commit it, screenshot it or include it in any report. Disable the exposed key.
-For an existing deployed app, replace its secret and verify the new key before
-disabling the old one to avoid downtime. See Google's official guidance:
-https://ai.google.dev/gemini-api/docs/api-key#security-and-secret-management
-
-Then run:
+The default command sends no key or chat message. Save the shared app's key privately as GEMINI_API_KEY in the environment or .streamlit/secrets.toml; never commit or paste it in chat. Then run:
 
 ```sh
 python scripts/check_gemini.py --live
 ```
 
-The live command loads the local key without printing it, calls the AI path
-directly and checks Delhi to Mumbai on tomorrow's IST date. Keyword fallback
-cannot make this test pass. Exit 0 means PASS, 1 means failure, 2 means a missing
-key/pending live test. Provider exception bodies are not printed.
+This calls the AI path directly and checks Delhi to Mumbai on tomorrow's IST date. Keyword fallback cannot count as PASS. Exit 0 means PASS, 1 failure and 2 missing key. No raw provider error body is printed. Set GEMINI_MODEL to a model available for this key's project if necessary. Keep HTTPS certificate verification enabled.
 
-If the selected model is unavailable, set GEMINI_MODEL to a model verified as
-available for the key's project. A connection PASS does not establish model
-availability. Do not disable certificate verification to fix a network failure.
+The standalone unittest live check also supports the local secrets file:
 
-## Ayman's updated code
+```sh
+python -m unittest tests.test_extractor.TestLiveGemini -v
+```
 
-The actual Python files have now been reviewed. The fixes are submitted on a
-branch created from main and included in the integration draft for retesting.
-See docs/extractor-review.md. Live Gemini still awaits a replacement key.
+See docs/extractor-review.md for the evidence and its limits.

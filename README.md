@@ -79,9 +79,13 @@ deployed app before using it for the final demo.
 Run `python scripts/run_chat_checks.py` for the 50 fixed-date fallback cases.
 Initial result: 43 passed, 7 failed. See `docs/testing-report.md` for exact inputs,
 expected values and actual results. The 26 unittest checks passed separately.
-Live Gemini and final app/deployment acceptance remain pending.
+Ayman supplied a passing real Gemini test; shared-app live verification and final app/deployment acceptance remain pending.
 
 ## Extractor retest
 The 50 offline conversational cases now pass 50/50 after Ayman's fixes and the
 integration corrections. The earlier baseline was 43/50. See docs/extractor-review.md
-and docs/testing-report.md. Live Gemini and full-app/deployment tests remain pending.
+and docs/testing-report.md. Ayman's live Gemini test passed in his environment. Shared-app live verification and full-app/deployment tests remain pending.
+
+## Latest review — 12 October 2026
+
+Ayman's updated test reads private local secrets; the current-date regression is fixed. Combined suite: 75 tests run, 74 passed, one live test skipped locally. Conversation checks: 50/50 passed. Ayman supplied a successful live Gemini screenshot, and Tarun relayed confirmation of old-key deletion. No real key is included. The shared app still requires private API setup, Yashvardhan's data, final frontend integration and deployed acceptance.

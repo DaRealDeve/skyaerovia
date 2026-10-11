@@ -48,3 +48,27 @@ class TestExtractorReview(unittest.TestCase):
                 result, _ = extractor._extract("Delhi to Mumbai tomorrow", TODAY)
         self.assertNotIn("fake-secret-credential", result.ai_error)
         self.assertNotIn("fake-secret-credential", " ".join(logs.output))
+
+    def test_live_check_uses_current_day_instead_of_offline_fixture(self):
+        import contextlib
+        import io
+        import test_extractor as submitted
+
+        live_day = date(2040, 1, 1)
+        answer = extractor.ExtractResult({
+            "intent": "cheapest", "origin": "Bengaluru", "destination": "Kolkata",
+            "date": "2040-01-02", "sort_by": "price", "max_price": None, "non_stop": True
+        }, source="ai")
+        outcome = unittest.TestResult()
+        with patch.object(submitted.TestLiveGemini, "__unittest_skip__", False), \
+             patch.object(submitted, "LIVE_KEY", "fake-private-test-key"), \
+             patch.object(extractor, "_as_date", return_value=live_day) as current_day, \
+             patch.object(submitted, "_extract", return_value=(answer, "ai")) as extract, \
+             contextlib.redirect_stdout(io.StringIO()):
+            submitted.TestLiveGemini("test_real_gemini_answers").run(outcome)
+        self.assertEqual(outcome.testsRun, 1)
+        self.assertEqual((outcome.errors, outcome.failures, outcome.skipped), ([], [], []))
+        current_day.assert_called_once_with(None)
+        extract.assert_called_once_with(
+            "cheapest nonstop flight from Bangalore to Calcutta tomorrow", live_day
+        )

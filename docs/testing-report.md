@@ -68,3 +68,7 @@ Retest after Ayman's updated extractor and integration corrections. The original
 Tarun and Codex cover Ayush's test preparation, execution and results reporting. Ayush remains a team member. Ayman owns extractor fixes; Tarun's integration handles validation and state. Neither the initial QA results nor the draft PR should be marked final acceptance while failures remain.
 
 After fixes: rerun this script and the unittest suite. After flight data and final UI arrive: test all cases through the app and check actual routes, dates, prices, filters and reset. After private API setup: compare live Gemini and forced fallback behavior. After deployment: repeat the user flow on the deployed app. Never put the API key in a test report or screenshot.
+
+## 12 October review
+
+Latest submitted secrets-aware test reviewed; live tests use the current IST date. All 50 offline cases passed again. Combined suite: 75 tests run, 74 passed, one live test skipped here. Ayman supplied terminal evidence of one real Gemini request passing on 11 October; Tarun relayed confirmation that the old key was deleted. Shared-app live checks, final flight data/frontend acceptance and deployment remain pending.

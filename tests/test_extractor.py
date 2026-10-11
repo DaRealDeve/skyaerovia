@@ -6,11 +6,12 @@ Run from the project folder:
 
 All tests are offline (no API key, no internet): Gemini is replaced by a mock.
 The very last test talks to the REAL Gemini. It is skipped unless GEMINI_API_KEY is set
-in your environment (never put the key in this file).
+in your environment, or saved in .streamlit/secrets.toml (never put the key in this file).
 """
 
 import json
 import os
+import re
 import sys
 import unittest
 from datetime import date, datetime
@@ -24,7 +25,26 @@ import logging  # noqa: E402
 logging.getLogger("extractor").setLevel(logging.ERROR)  # keep test output clean
 from extractor import _extract, extract_request  # noqa: E402
 
-LIVE_KEY = os.environ.get("GEMINI_API_KEY")  # read BEFORE the tests clear it
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def _load_live_key():
+    """The key for the live test: the GEMINI_API_KEY environment variable, or else the
+    private file .streamlit/secrets.toml (which .gitignore keeps out of GitHub).
+    The key is never printed."""
+    key = os.environ.get("GEMINI_API_KEY")
+    if key:
+        return key
+    secrets = os.path.join(ROOT, ".streamlit", "secrets.toml")
+    if os.path.exists(secrets):
+        with open(secrets, encoding="utf-8") as f:
+            m = re.search(r'^\s*GEMINI_API_KEY\s*=\s*["\']([^"\']+)["\']', f.read(), re.MULTILINE)
+        if m:
+            return m.group(1)
+    return None
+
+
+LIVE_KEY = _load_live_key()  # read BEFORE the tests clear the environment variable
 
 T = date(2026, 10, 11)  # fixed "today" (a Sunday) so results never change
 TOMORROW = "2026-10-12"
@@ -420,14 +440,15 @@ class TestGeminiPath(OfflineTestCase):
 # ==========================================================================
 # LIVE test of the real Gemini connection (skipped without a key)
 # ==========================================================================
-@unittest.skipUnless(LIVE_KEY, "set GEMINI_API_KEY in your environment to run the live Gemini test")
+@unittest.skipUnless(LIVE_KEY, "no key found: set GEMINI_API_KEY or create .streamlit/secrets.toml")
 class TestLiveGemini(unittest.TestCase):
     def test_real_gemini_answers(self):
         with mock.patch.dict(os.environ, {"GEMINI_API_KEY": LIVE_KEY}):
             live_today = extractor._as_date(None)
             result, source = _extract("cheapest nonstop flight from Bangalore to Calcutta tomorrow", live_today)
+        reason = (result.ai_error or "").replace(LIVE_KEY, "[KEY HIDDEN]")  # never show the key
         print(f"\n  model={extractor.MODEL} source={source} result={dict(result)} problems={result.problems}")
-        self.assertEqual(source, "ai", f"Gemini did not answer. Reason: {result.ai_error}")
+        self.assertEqual(source, "ai", f"Gemini did not answer. Reason: {reason}")
         self.assertEqual(result["intent"], "cheapest")
         self.assertEqual((result["origin"], result["destination"]), ("Bengaluru", "Kolkata"))
         self.assertEqual(result["date"], (live_today + extractor.timedelta(days=1)).isoformat())
