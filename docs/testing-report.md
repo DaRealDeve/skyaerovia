@@ -4,7 +4,7 @@ Result: **50/50 passed; 0 failed.**
 
 Scope: deterministic offline keyword fallback plus the integration adapter. Fixed reference date: 2026-10-11 (IST). No API key or live Gemini call was used. Cases check status and the listed expected fields; passing does not guarantee every possible field is correct.
 
-Retest after the extractor/frontend/data integration. The original baseline was 43/50. The separate unittest round ran 81 checks: 80 passed and one live test skipped locally. All 50 cases also pass through the complete Streamlit UI with simulated data. The shared app's private key/live check and hosted acceptance remain pending.
+Retest after the extractor/frontend/data integration. The original baseline was 43/50. The separate unittest round ran 81 checks: 80 passed and one live test skipped locally. All 50 cases also pass through the complete Streamlit UI with simulated data. Hosted acceptance and a semantic Gemini-versus-keyword control passed on 12 October 2026; see docs/deployment-checks.md. This offline run does not make a live API call.
 
 ## Results
 
@@ -67,4 +67,4 @@ Retest after the extractor/frontend/data integration. The original baseline was 
 
 Tarun and Codex cover Ayush's test preparation, execution and results reporting. Ayush remains a team member. Ayman owns extractor fixes; Tarun's integration handles validation and state. Neither the initial QA results nor the draft PR should be marked final acceptance while failures remain.
 
-Full UI/data checks are recorded in docs/ui-chat-report.md and docs/frontend-review.md. After private API setup: compare live Gemini and forced fallback behavior. After deployment: repeat the user flow on the deployed app. Never put the API key in a test report or screenshot.
+Full UI/data checks are recorded in docs/ui-chat-report.md and docs/frontend-review.md. Dated hosted checks and the Gemini/keyword comparison are in docs/deployment-checks.md. Repeat hosted acceptance after material code, data or API configuration changes. Never put the API key in a test report or screenshot.

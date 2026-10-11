@@ -6,7 +6,7 @@ Ayman supplied a terminal screenshot of a successful real Gemini test on 11 Octo
 
 The review uses the current IST date for live tests; deterministic offline tests keep their fixed reference date. With flight-data and final-frontend checks, the combined suite runs 81 tests: 80 pass and one real-key test is skipped on Tarun's review machine. All 50 offline conversation cases pass through both the adapter and the full Streamlit UI. Ayman's private key was not shared or reused.
 
-The shared app still needs its own privately configured working key and a live check on that machine. Ayman's passing test is evidence for his environment, not the deployment.
+The shared app's key is now stored privately in Streamlit Secrets. On the hosted app, a cleared conversation resolved "Fly from India's capital to Maharashtra's capital tomorrow for less than 5000 rupees" to Delhi → Mumbai on 2026-10-13, with three expected flights. The same message in the local keyword-only control did not produce a valid route. Since the current implementation has only Gemini and keyword extraction paths, this contrast supports the conclusion that hosted Gemini answered. This is an inference from controlled behavior, not a source=ai provider log. It does not mean all 50 cases were tested live. See deployment-checks.md.
 
 ## Connectivity previously checked on Tarun's computer
 

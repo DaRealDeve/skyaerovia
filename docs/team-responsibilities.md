@@ -12,5 +12,5 @@ The team still has seven members. Yashvardhan, Ayush and Shivam remain in the te
 | Ayush | Remains a team member; testing/API-helper deliverables covered by Tarun and Codex |
 | Shivam | Remains a team member; documentation/demo deliverables covered by Tarun and Codex |
 
-Flight data and frontend integration are complete and available checks pass. Next: Streamlit account/access setup, private shared-app API configuration and hosted acceptance checks. Shivam's report, slides, screenshots and demo work starts after the remaining technical work is ready, as Tarun requested.
+Flight data, frontend integration, private API setup, public deployment and hosted acceptance checks are complete. After those technical checks, Tarun/Codex prepared the eight-page PDF report, editable ten-slide presentation, screenshots, captioned MP4 walkthrough and script. The video uses captured app screenshots and has no audio; it is not a continuous screen recording. All seven members remain in the team. The next step is to review the artifacts, add institution-specific submission details and present the demo. See submission-notes.md.
 

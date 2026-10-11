@@ -1,6 +1,6 @@
 # Deploy SkyAerovia on Streamlit Community Cloud
 
-The application is prepared for deployment. The account sign-in, any required terms/access approval and the private API secret must be completed by Tarun (or the key owner privately, without posting the key in chat).
+**Current status — 12 October 2026:** the app is deployed at https://skyaerovia.streamlit.app/ and public with Tarun's approval. Tarun completed sign-in and saved the new key privately. The repository remains private. Hosted acceptance checks are recorded in [deployment-checks.md](deployment-checks.md). The steps below also support later redeployment.
 
 ## Open and connect the account
 
@@ -31,15 +31,15 @@ Replace the placeholder locally/in the Streamlit form. Do not send the key in a 
 11. Select Nonstop only: two cards should remain. Sort by Shortest duration: the 130-minute flight should appear before the 140-minute flight.
 12. Set the sidebar maximum price to ₹3,500 with nonstop enabled: there should be no results. Allow stops: the ₹3,200 choice should appear.
 13. Clear chat: the welcome message returns, results disappear and filters reset. Send "from Delhi", then "Mumbai", then "2026-10-13" and confirm the follow-up questions and results.
-14. Verify the actual Gemini connection separately with the private key. Chat success alone may be the keyword fallback; the dedicated live check requires source=ai and correct fields. Local command: python scripts/check_gemini.py --live. The existing screenshot proves Ayman's environment, not the shared deployment.
+14. For a future key change, run python scripts/check_gemini.py --live with a local private key, or repeat the hosted semantic request and keyword-only control described in deployment-checks.md. Ordinary chat success alone can be fallback. The current hosted semantic comparison supports the Gemini path; the local live-key unittest remains skipped because the key was not copied to the review machine.
 
-The app also works without a key through the keyword fallback. That is not proof of successful Gemini configuration. A live connection and hosted checks remain pending until performed.
+The app also works without a key through the keyword fallback. That is not proof of successful Gemini configuration. The dated hosted checks passed on 12 October 2026. This does not guarantee every input or future provider availability.
 
 ## Later demos
 
 The committed simulated schedule covers 12–18 October 2026. Before a later demo, run python scripts/generate_flights.py in the project folder, check the tests and commit the refreshed data. The cloud app reads the GitHub file; it does not refresh the dates automatically. The app displays its available date range and warns if it expires.
 
-After deployment and final technical checks, prepare Shivam's report, presentation, screenshots and demo recording. All seven members remain in the team; Tarun and Codex cover Yashvardhan's data, Ayush's QA and Shivam's deliverables.
+After deployment and final technical checks, Tarun/Codex prepared Shivam's report, presentation, screenshots, captioned demo walkthrough and script. All seven members remain in the team; Tarun and Codex cover Yashvardhan's data, Ayush's QA and Shivam's deliverables.
 
 Official references:
 - https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app
