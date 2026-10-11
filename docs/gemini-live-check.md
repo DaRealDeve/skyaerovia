@@ -4,7 +4,7 @@
 
 Ayman supplied a terminal screenshot of a successful real Gemini test on 11 October: gemini-3.5-flash, source=ai, one test run, OK and no skipped test. Tarun relayed Ayman's confirmation that the old exposed key was deleted. The updated secrets-aware test is on GitHub.
 
-The review uses the current IST date for live tests; deterministic offline tests keep their fixed reference date. The combined suite runs 75 tests: 74 pass and one real-key test is skipped on Tarun's review machine. All 50 offline conversation cases pass. Ayman's private key was not shared or reused.
+The review uses the current IST date for live tests; deterministic offline tests keep their fixed reference date. With flight-data checks, the combined suite runs 79 tests: 78 pass and one real-key test is skipped on Tarun's review machine. All 50 offline conversation cases pass. Ayman's private key was not shared or reused.
 
 The shared app still needs its own privately configured working key and a live check on that machine. Ayman's passing test is evidence for his environment, not the deployment.
 
@@ -35,3 +35,4 @@ python -m unittest tests.test_extractor.TestLiveGemini -v
 ```
 
 See docs/extractor-review.md for the evidence and its limits.
+

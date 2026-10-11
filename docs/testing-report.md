@@ -71,4 +71,10 @@ After fixes: rerun this script and the unittest suite. After flight data and fin
 
 ## 12 October review
 
-Latest submitted secrets-aware test reviewed; live tests use the current IST date. All 50 offline cases passed again. Combined suite: 75 tests run, 74 passed, one live test skipped here. Ayman supplied terminal evidence of one real Gemini request passing on 11 October; Tarun relayed confirmation that the old key was deleted. Shared-app live checks, final flight data/frontend acceptance and deployment remain pending.
+Latest submitted secrets-aware test reviewed; live tests use the current IST date. All 50 offline cases passed again. Combined suite before data: 75 tests run, 74 passed, one live test skipped here. Ayman supplied terminal evidence of one real Gemini request passing on 11 October; Tarun relayed confirmation that the old key was deleted.
+
+## Flight-data acceptance — 12 October
+
+Tarun and Codex cover Yashvardhan's data work. The committed file contains 60 simulated flights, all eight supported cities and seven consecutive dates (12–18 October). Four dataset checks validate structure/unique IDs/city/date coverage, arrival-duration consistency and units, route/date/budget/nonstop/duration search, and regenerated dates across year and leap-day boundaries.
+
+The combined suite now runs 79 tests: 78 pass and one real-key test is skipped locally. An additional Streamlit check using the actual committed dataset passes: Delhi–Mumbai tomorrow returns three cards, nonstop filtering returns two, duration sorting works and New chat clears state/results. No real key was used. This checks the integration interface; Richa's final frontend and shared-app/deployment acceptance remain pending.

@@ -2,14 +2,14 @@
 **Your way through the sky** — a student flight-assistance project featuring Skye.
 
 ## Current status
-Sakshi's search module and Ayman's original extractor are merged into main.
+Sakshi's search module and Ayman's reviewed extractor fixes are merged into main.
 This integration connects extraction, session context, validation and flight search.
 The demo cannot book tickets or process payments. All flight results are simulated.
 
-Pending team deliverables:
-- Yashvardhan: root-level `flights.json` (60 flights, eight supported cities, next seven days).
-- Richa: final navy/blue interface.
-- Ayman: extractor compatibility fixes; live Gemini tests with Tarun and Codex.
+Current team deliverables:
+- Tarun and Codex cover Yashvardhan's flight data: root-level `flights.json` now contains 60 simulated flights, eight supported cities and seven consecutive dates. Yashvardhan remains a team member.
+- Richa: navy/blue frontend submitted in PR #5; review and backend integration remain pending.
+- Ayman: reviewed extractor merged in PR #4; his real Gemini test passed. He can support any extractor bugs found later.
 - Tarun and Codex: Ayush's 50-case QA, bug report, live API checks and final end-to-end tests. Ayush remains a team member.
 - Tarun and Codex: Shivam's report, deck, screenshots and demo. Shivam remains a team member.
 
@@ -28,8 +28,9 @@ On Windows use `py -m venv .venv` and `.venv\\Scripts\\activate`.
 The app runs with the keyword fallback without an API key. When ready, copy
 `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml` and set your key
 locally. The app passes that secret to the current extractor through the environment.
-Never upload a real key. Ayman's current client also accepts `GEMINI_MODEL` as an
-environment variable; the model and live Gemini connection still need verification.
+Never upload a real key. The extractor also accepts `GEMINI_MODEL` as an
+environment variable. Ayman verified gemini-3.5-flash in his environment; the shared
+app's separate private key and live connection still need verification.
 
 ## Integration
 `app.py` calls `prepare_request` in `integration.py`, which uses
@@ -59,10 +60,10 @@ The app validates the file when loading it. Keep the demo dates current.
 ```sh
 python -m unittest discover -s tests -v
 ```
-The combined suite runs 74 checks: 73 pass and one live Gemini test is skipped.
+The combined suite runs 79 checks: 78 pass and one live Gemini test is skipped locally.
 It covers search, extractor, integration, Streamlit interactions and the API checker. Tests deliberately
-disable Gemini and use temporary simulated fixtures; they do not use API keys or
-replace the team's dataset. Passing these checks does not verify the live Gemini API.
+disable Gemini and use temporary simulated fixtures, plus checks of the committed
+60-flight dataset. They do not use API keys. Passing these checks does not verify the live Gemini API.
 
 ## Team workflow
 Create a branch, upload your work, open a PR into main and wait for review.
@@ -88,4 +89,17 @@ and docs/testing-report.md. Ayman's live Gemini test passed in his environment. 
 
 ## Latest review — 12 October 2026
 
-Ayman's updated test reads private local secrets; the current-date regression is fixed. Combined suite: 75 tests run, 74 passed, one live test skipped locally. Conversation checks: 50/50 passed. Ayman supplied a successful live Gemini screenshot, and Tarun relayed confirmation of old-key deletion. No real key is included. The shared app still requires private API setup, Yashvardhan's data, final frontend integration and deployed acceptance.
+Ayman's updated test reads private local secrets; the current-date regression is fixed. Combined suite: 79 tests run, 78 passed, one live test skipped locally. Conversation checks: 50/50 passed. Ayman supplied a successful live Gemini screenshot, and Tarun relayed confirmation of old-key deletion. No real key is included. Tarun and Codex now cover Yashvardhan's data as well as Ayush's QA and Shivam's documentation/demo. The shared app still requires private API setup, final frontend integration and deployed acceptance. Shivam's deliverables remain deferred until technical work is ready.
+
+## Refresh simulated flights
+
+The committed data covers 12–18 October 2026. Before a later demo, run:
+
+```sh
+python scripts/generate_flights.py
+```
+
+This regenerates 60 fictional flights for today in IST through six days later.
+Commit the refreshed data and rerun the tests. The hosted app does not regenerate
+dates automatically. See `docs/flight-data.md` for the sample-data limits and units.
+
