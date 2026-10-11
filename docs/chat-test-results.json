@@ -1,0 +1,1042 @@
+[
+  {
+    "id": "T01",
+    "category": "Normal route",
+    "message": "flights from Delhi to Mumbai tomorrow",
+    "expected": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T02",
+    "category": "Normal route",
+    "message": "flights from Mumbai to Bengaluru tomorrow",
+    "expected": {
+      "status": "ready",
+      "origin": "Mumbai",
+      "destination": "Bengaluru",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Mumbai",
+      "destination": "Bengaluru",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T03",
+    "category": "Normal route",
+    "message": "flights from Bengaluru to Chennai tomorrow",
+    "expected": {
+      "status": "ready",
+      "origin": "Bengaluru",
+      "destination": "Chennai",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Bengaluru",
+      "destination": "Chennai",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T04",
+    "category": "Normal route",
+    "message": "flights from Chennai to Hyderabad tomorrow",
+    "expected": {
+      "status": "ready",
+      "origin": "Chennai",
+      "destination": "Hyderabad",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Chennai",
+      "destination": "Hyderabad",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T05",
+    "category": "Normal route",
+    "message": "flights from Hyderabad to Kolkata tomorrow",
+    "expected": {
+      "status": "ready",
+      "origin": "Hyderabad",
+      "destination": "Kolkata",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Hyderabad",
+      "destination": "Kolkata",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T06",
+    "category": "Normal route",
+    "message": "flights from Kolkata to Pune tomorrow",
+    "expected": {
+      "status": "ready",
+      "origin": "Kolkata",
+      "destination": "Pune",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Kolkata",
+      "destination": "Pune",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T07",
+    "category": "Normal route",
+    "message": "flights from Pune to Ahmedabad tomorrow",
+    "expected": {
+      "status": "ready",
+      "origin": "Pune",
+      "destination": "Ahmedabad",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Pune",
+      "destination": "Ahmedabad",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T08",
+    "category": "Normal route",
+    "message": "flights from Ahmedabad to Delhi tomorrow",
+    "expected": {
+      "status": "ready",
+      "origin": "Ahmedabad",
+      "destination": "Delhi",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Ahmedabad",
+      "destination": "Delhi",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T09",
+    "category": "City alias",
+    "message": "Bangalore to Bombay tomorrow",
+    "expected": {
+      "status": "ready",
+      "origin": "Bengaluru",
+      "destination": "Mumbai"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Bengaluru",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T10",
+    "category": "City alias",
+    "message": "DEL to BOM tomorrow",
+    "expected": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T11",
+    "category": "City alias",
+    "message": "New Delhi to Calcutta tomorrow",
+    "expected": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Kolkata"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Kolkata",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T12",
+    "category": "City alias",
+    "message": "Madras to Poona tomorrow",
+    "expected": {
+      "status": "ready",
+      "origin": "Chennai",
+      "destination": "Pune"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Chennai",
+      "destination": "Pune",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T13",
+    "category": "Date",
+    "message": "Delhi to Mumbai today",
+    "expected": {
+      "status": "ready",
+      "date": "2026-10-11"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-11",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T14",
+    "category": "Date",
+    "message": "Delhi to Mumbai tomorrow",
+    "expected": {
+      "status": "ready",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T15",
+    "category": "Date",
+    "message": "Delhi to Mumbai day after tomorrow",
+    "expected": {
+      "status": "ready",
+      "date": "2026-10-13"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-13",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T16",
+    "category": "Date",
+    "message": "Delhi to Mumbai tmrw",
+    "expected": {
+      "status": "ready",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T17",
+    "category": "Date",
+    "message": "Delhi to Mumbai next friday",
+    "expected": {
+      "status": "ready",
+      "date": "2026-10-16"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-16",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T18",
+    "category": "Date",
+    "message": "Delhi to Mumbai 15 oct",
+    "expected": {
+      "status": "ready",
+      "date": "2026-10-15"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-15",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T19",
+    "category": "Date",
+    "message": "Delhi to Mumbai 2026-10-13",
+    "expected": {
+      "status": "ready",
+      "date": "2026-10-13"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-13",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T20",
+    "category": "Budget",
+    "message": "Delhi to Mumbai tomorrow under 5k",
+    "expected": {
+      "status": "ready",
+      "max_price": 5000
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "max_price": 5000,
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T21",
+    "category": "Budget",
+    "message": "Delhi to Mumbai tomorrow below 4500",
+    "expected": {
+      "status": "ready",
+      "max_price": 4500
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "max_price": 4500,
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T22",
+    "category": "Budget",
+    "message": "Delhi to Mumbai tomorrow max Rs 6,000",
+    "expected": {
+      "status": "ready",
+      "max_price": 6000
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "max_price": 6000,
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T23",
+    "category": "Budget",
+    "message": "Delhi to Mumbai tomorrow within 1 lakh",
+    "expected": {
+      "status": "ready",
+      "max_price": 100000
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "max_price": 100000,
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T24",
+    "category": "Invalid budget",
+    "message": "Delhi to Mumbai tomorrow under -100",
+    "expected": {
+      "status": "clarify"
+    },
+    "actual": {
+      "status": "clarify",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "max_price": null,
+      "intent": "search",
+      "asking": "max_price"
+    },
+    "reply": "Please give a valid positive maximum budget in rupees.",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T25",
+    "category": "Sorting",
+    "message": "cheapest Delhi to Mumbai tomorrow",
+    "expected": {
+      "status": "ready",
+      "sort_by": "price"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "sort_by": "price",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T26",
+    "category": "Sorting",
+    "message": "fastest Delhi to Mumbai tomorrow",
+    "expected": {
+      "status": "ready",
+      "sort_by": "duration"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "sort_by": "duration",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T27",
+    "category": "Unsupported sorting",
+    "message": "earliest Delhi to Mumbai tomorrow",
+    "expected": {
+      "status": "clarify"
+    },
+    "actual": {
+      "status": "clarify",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "intent": "search",
+      "sort_by": null,
+      "asking": "sort_by"
+    },
+    "reply": "I can sort by price or duration. Which would you prefer?",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T28",
+    "category": "Stops",
+    "message": "nonstop flights Delhi to Mumbai tomorrow",
+    "expected": {
+      "status": "ready",
+      "non_stop": true
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "non_stop": true,
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T29",
+    "category": "Stops",
+    "message": "direct flights Delhi to Mumbai tomorrow",
+    "expected": {
+      "status": "ready",
+      "non_stop": true
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "non_stop": true,
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T30",
+    "category": "Stops",
+    "message": "no layovers flights Delhi to Mumbai tomorrow",
+    "expected": {
+      "status": "ready",
+      "non_stop": true
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "non_stop": true,
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T31",
+    "category": "Clear nonstop preference",
+    "message": "Delhi to Mumbai tomorrow, stops are fine",
+    "expected": {
+      "status": "ready",
+      "non_stop": false
+    },
+    "context": {
+      "intent": "search",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "non_stop": true
+    },
+    "actual": {
+      "status": "ready",
+      "intent": "search",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "non_stop": false
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T32",
+    "category": "Missing details",
+    "message": "from Delhi",
+    "expected": {
+      "status": "clarify",
+      "asking": "destination",
+      "origin": "Delhi"
+    },
+    "actual": {
+      "status": "clarify",
+      "origin": "Delhi",
+      "intent": "search",
+      "asking": "destination"
+    },
+    "reply": "Which city are you flying to?",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T33",
+    "category": "Missing details",
+    "message": "flights to Mumbai tomorrow",
+    "expected": {
+      "status": "clarify",
+      "asking": "origin",
+      "destination": "Mumbai"
+    },
+    "actual": {
+      "status": "clarify",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "intent": "search",
+      "asking": "origin"
+    },
+    "reply": "Which city are you flying from?",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T34",
+    "category": "Missing details",
+    "message": "Delhi to Mumbai",
+    "expected": {
+      "status": "clarify",
+      "asking": "date"
+    },
+    "actual": {
+      "status": "clarify",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "intent": "search",
+      "asking": "date"
+    },
+    "reply": "What date would you like to travel?",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T35",
+    "category": "Empty message",
+    "message": "",
+    "expected": {
+      "status": "help"
+    },
+    "actual": {
+      "status": "help"
+    },
+    "reply": "Tell me your departure city, destination and date. You can request cheapest or fastest flights, a budget, or nonstop flights. This demo cannot book tickets.",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T36",
+    "category": "Follow-up city",
+    "message": "Mumbai",
+    "expected": {
+      "status": "ready",
+      "destination": "Mumbai"
+    },
+    "context": {
+      "intent": "search",
+      "origin": "Delhi",
+      "date": "2026-10-12",
+      "asking": "destination"
+    },
+    "actual": {
+      "status": "ready",
+      "intent": "search",
+      "origin": "Delhi",
+      "date": "2026-10-12",
+      "destination": "Mumbai"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T37",
+    "category": "Follow-up city",
+    "message": "Delhi",
+    "expected": {
+      "status": "ready",
+      "origin": "Delhi"
+    },
+    "context": {
+      "intent": "search",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "asking": "origin"
+    },
+    "actual": {
+      "status": "ready",
+      "intent": "search",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "origin": "Delhi"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T38",
+    "category": "Follow-up date",
+    "message": "tomorrow",
+    "expected": {
+      "status": "ready",
+      "date": "2026-10-12"
+    },
+    "context": {
+      "intent": "search",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "asking": "date"
+    },
+    "actual": {
+      "status": "ready",
+      "intent": "search",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T39",
+    "category": "Follow-up sorting",
+    "message": "the cheapest",
+    "expected": {
+      "status": "ready",
+      "sort_by": "price"
+    },
+    "context": {
+      "intent": "search",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "intent": "search",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "sort_by": "price"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T40",
+    "category": "Follow-up budget",
+    "message": "5000",
+    "expected": {
+      "status": "ready",
+      "max_price": 5000
+    },
+    "context": {
+      "intent": "search",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "asking": "max_price"
+    },
+    "actual": {
+      "status": "ready",
+      "intent": "search",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "max_price": 5000
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T41",
+    "category": "Hinglish",
+    "message": "Delhi se Mumbai kal",
+    "expected": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T42",
+    "category": "Hinglish",
+    "message": "Delhi to Mumbai aaj",
+    "expected": {
+      "status": "ready",
+      "date": "2026-10-11"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-11",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T43",
+    "category": "Hinglish",
+    "message": "Dilli se Mumbai tomorrow",
+    "expected": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T44",
+    "category": "Hinglish",
+    "message": "5000 se kam",
+    "expected": {
+      "status": "ready",
+      "max_price": 5000
+    },
+    "context": {
+      "intent": "search",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "intent": "search",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "max_price": 5000
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T45",
+    "category": "Hinglish preference",
+    "message": "layover chalega",
+    "expected": {
+      "status": "ready",
+      "non_stop": false
+    },
+    "context": {
+      "intent": "search",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "non_stop": true
+    },
+    "actual": {
+      "status": "ready",
+      "intent": "search",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "non_stop": false
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T46",
+    "category": "City typo",
+    "message": "Delih to Mumbai tomorrow",
+    "expected": {
+      "status": "clarify",
+      "asking": "origin"
+    },
+    "actual": {
+      "status": "clarify",
+      "date": "2026-10-12",
+      "intent": "search",
+      "asking": "origin"
+    },
+    "reply": "Which city are you flying from?",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T47",
+    "category": "Date typo",
+    "message": "Delhi to Mumbai tomorow",
+    "expected": {
+      "status": "ready",
+      "date": "2026-10-12"
+    },
+    "actual": {
+      "status": "ready",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "intent": "search"
+    },
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T48",
+    "category": "Past date",
+    "message": "Delhi to Mumbai 2026-10-05",
+    "expected": {
+      "status": "clarify",
+      "asking": "date",
+      "date": null
+    },
+    "actual": {
+      "status": "clarify",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "intent": "search",
+      "date": null,
+      "asking": "date"
+    },
+    "reply": "Please give a valid travel date for today or later.",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T49",
+    "category": "Invalid date",
+    "message": "Delhi to Mumbai 2026-02-30",
+    "expected": {
+      "status": "clarify",
+      "asking": "date"
+    },
+    "actual": {
+      "status": "clarify",
+      "origin": "Delhi",
+      "destination": "Mumbai",
+      "intent": "search",
+      "date": null,
+      "asking": "date"
+    },
+    "reply": "Please give a valid travel date for today or later.",
+    "passed": true,
+    "mismatches": {}
+  },
+  {
+    "id": "T50",
+    "category": "Unsupported city",
+    "message": "Delhi to Goa tomorrow",
+    "expected": {
+      "status": "clarify",
+      "asking": "destination"
+    },
+    "actual": {
+      "status": "clarify",
+      "origin": "Delhi",
+      "destination": null,
+      "date": "2026-10-12",
+      "intent": "search",
+      "asking": "destination"
+    },
+    "reply": "Please choose your destination from: Delhi, Mumbai, Bengaluru, Chennai, Hyderabad, Kolkata, Pune, Ahmedabad.",
+    "passed": true,
+    "mismatches": {}
+  }
+]

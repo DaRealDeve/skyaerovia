@@ -1,167 +1,168 @@
+"""SkyAerovia: Richa's navy/blue frontend connected to Skye and demo search."""
+import html
+import os
+from datetime import datetime
+from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import streamlit as st
 
-st.set_page_config(
-    page_title="SkyAerovia \| Skye",
-    page_icon="✈️",
-    layout="wide"
-)
-col1, col2, col3 = st.columns([1, 2, 1])
+from extractor import extract_request
+from integration import CITIES, find_matches, load_flights, prepare_request
 
-with col2:
-    st.image("assets/logo.jpg", width=700)
-
-#Navy and blue theme
+st.set_page_config(page_title="SkyAerovia | Skye", page_icon="✈️", layout="wide")
+ROOT = Path(__file__).resolve().parent
+LOGO = ROOT / "assets" / "logo.jpg"
 st.markdown("""
 <style>
-.stApp {
-    background-color: #F3F6FB;
-}
-
+.stApp { background-color: #F3F6FB; color: #102A43; }
+.block-container { max-width: 1080px; padding-top: 2rem; }
+[data-testid="stSidebar"] { background-color: #EAF1FA; }
 .hero {
     background: linear-gradient(120deg, #071B3A, #145DA0);
-    padding: 12px;
-    border-radius: 15px;
-    color: white;
-    margin-bottom: 15px;
+    padding: 28px; border-radius: 18px; color: white; margin-bottom: 20px;
 }
-
-.hero h1 {
-    color: white;
-    font-size: 24px;
-}
-
-.hero p {
-    color: #E3EEFF;
-    font-size: 16px;
-}
-
+.hero h1 { color: white; font-size: clamp(28px, 4vw, 42px); padding-top: 0; }
+.hero p { color: #E3EEFF; font-size: 17px; margin-bottom: 0; }
 .flight-card {
-    background: white;
-    padding: 20px;
-    border: 1px solid #D8E4F2;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    color: #102A43;
+    background: white; padding: 22px; border: 1px solid #D8E4F2;
+    border-radius: 14px; margin-bottom: 14px; color: #102A43;
 }
+.flight-card h3 { color: #071B3A; padding-top: 6px; font-size: 23px; }
+.flight-card p { margin-bottom: 8px; }
+.flight-card .fare { color: #0B3D91; font-size: 25px; font-weight: 700; }
+.flight-card .detail { color: #486581; }
 </style>
 """, unsafe_allow_html=True)
 
-# Sidebar
+# Read credentials only from the environment or private Streamlit secrets.
+for setting in ("GEMINI_API_KEY", "GEMINI_MODEL"):
+    if not os.getenv(setting):
+        try:
+            value = st.secrets.get(setting)
+            if isinstance(value, str) and value.strip():
+                os.environ[setting] = value.strip()
+        except st.errors.StreamlitSecretNotFoundError:
+            pass
+# The extractor's model setting is evaluated at import. Apply a Cloud secret override.
+import extractor
+if os.getenv("GEMINI_MODEL"):
+    extractor.MODEL = os.environ["GEMINI_MODEL"]
+
+today = datetime.now(ZoneInfo("Asia/Kolkata")).date()
+try:
+    flights = load_flights(ROOT / "flights.json")
+except (ValueError, TypeError, OSError):
+    flights = None
+    st.error("Flight data could not be loaded. Please try again after the team updates it.")
+else:
+    if flights is None:
+        st.warning("Flight results are waiting for the demo data. You can still tell Skye your travel preferences.")
+
+GREETING = "Namaste! I'm Skye, your SkyAerovia flight assistant. Tell me your departure city, destination and travel date. You can also ask for a budget, nonstop flights or the shortest journey."
+for name, default in (
+    ("messages", [{"role": "assistant", "content": GREETING}]),
+    ("request", {}), ("results", None)
+):
+    if name not in st.session_state:
+        st.session_state[name] = default
+
 with st.sidebar:
-    st.image("assets/logo.jpg", width=320)
-    st.caption("Your personal travel assistant")
+    if LOGO.exists():
+        st.image(str(LOGO), width=230)
+    st.caption("Your way through the sky")
     st.divider()
-    st.subheader("Flight preferences")
-
-    sort_by = st.selectbox(
-        "Sort flights by",
-        ["Recommended", "Lowest price", "Shortest duration"]
-    )
-
-    nonstop = st.checkbox("Non-stop flights only")
-
-    if st.button("🗑️ Clear Chat"):
-        st.session_state.messages = []
+    if st.button("Clear chat", key="clear_chat", use_container_width=True):
+        st.session_state.messages = [{"role": "assistant", "content": GREETING}]
+        st.session_state.request = {}
+        st.session_state.results = None
+        for name in ("sort_choice", "budget_enabled", "budget_value", "stops_choice"):
+            st.session_state.pop(name, None)
         st.rerun()
+    st.subheader("Flight preferences")
+    sort_choice = st.selectbox(
+        "Sort flights", ["Use chat preference", "Lowest price", "Shortest duration"],
+        key="sort_choice"
+    )
+    sort_override = {"Lowest price": "price", "Shortest duration": "duration"}.get(sort_choice)
+    use_budget = st.checkbox("Set maximum price", key="budget_enabled")
+    budget_override = st.number_input(
+        "Maximum price (₹)", min_value=1, value=5000, step=500, key="budget_value"
+    ) if use_budget else None
+    stops_choice = st.selectbox(
+        "Stops", ["Use chat preference", "Nonstop only", "Allow stops"], key="stops_choice"
+    )
+    stops_override = {"Nonstop only": True, "Allow stops": False}.get(stops_choice)
+    st.caption("Choose a filter here to override the same preference in your chat.")
+    st.divider()
+    st.caption("Available cities: " + ", ".join(CITIES))
 
-# Welcome banner
 st.markdown("""
 <div class="hero">
     <h1>Namaste! Welcome to SkyAerovia</h1>
-    <p>Your journey begins here. How can we help you fly today?</p>
+    <p>Your way through the sky. Find your next journey with Skye.</p>
 </div>
 """, unsafe_allow_html=True)
-
-# Chat section
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-st.markdown(
-    '<h3 style="color: #0B3D91;">☁️Chat with your travel assistant</h3>',
-    unsafe_allow_html=True
-)
-
+st.caption("Student demo · Simulated flights · No ticket booking or payments")
+if flights:
+    first_date = min(f["date"] for f in flights)
+    last_date = max(f["date"] for f in flights)
+    st.caption(f"Sample travel dates: {first_date} to {last_date} · All times are IST")
+    if last_date < today.isoformat():
+        st.warning("The sample flight dates have expired. The team needs to refresh them before new searches.")
+    elif first_date > today.isoformat():
+        st.info(f"The sample schedule starts on {first_date}. Choose a date in the displayed range.")
+st.subheader("Chat with Skye")
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
-user_input = st.chat_input(
-    "Ask about flights, timings or travel plans..."
-)
-
-if user_input:
-    st.session_state.messages.append({
-        "role": "user",
-        "content": user_input
-    })
-
-    with st.spinner("Preparing your response..."):
-        response = (
-            "Welcome aboard! This is a UI demo. "
-            "Your team's AI backend will be connected later."
-        )
-
-    st.session_state.messages.append({
-        "role": "assistant",
-        "content": response
-    })
-
+if prompt := st.chat_input("For example: Delhi to Mumbai tomorrow under 5000", max_chars=2000):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.session_state.results = None
+    with st.spinner("Skye is checking your request…"):
+        try:
+            state, status, reply = prepare_request(
+                prompt, st.session_state.request, today, extract_request
+            )
+            st.session_state.request = state
+            if status == "ready":
+                if flights is None:
+                    reply = f"Your request is {state['origin']} to {state['destination']} on {state['date']}. Flight results are waiting for the demo data."
+                else:
+                    st.session_state.results = state
+                    matches = find_matches(flights, state, sort_override, budget_override, stops_override)
+                    reply = (
+                        f"I found {len(matches)} simulated flight(s) from {state['origin']} to {state['destination']} on {state['date']}."
+                        if matches else
+                        "No simulated flights match those preferences. Try another date, route or budget."
+                    )
+        except Exception:
+            reply = "I couldn't understand that request. Please try cities and date, for example: Delhi to Mumbai tomorrow."
+    st.session_state.messages.append({"role": "assistant", "content": reply})
     st.rerun()
 
-# Flight cards
-st.divider()
-st.markdown(
-    '<h3 style="color: #0B3D91;"> ✈️Explore Flights</h3>',
-    unsafe_allow_html=True
-)
+if flights is not None and st.session_state.results:
+    matches = find_matches(flights, st.session_state.results, sort_override, budget_override, stops_override)
+    st.divider()
+    st.subheader("Your flight options")
+    st.caption(f"{len(matches)} simulated flight(s) match the current filters.")
+    if not matches:
+        st.info("No flights match the current filters. Try allowing stops or increasing your budget.")
+    for flight in matches:
+        # Escape dataset strings before inserting them into Richa's HTML card design.
+        airline, ident, origin, destination, day, departure, arrival = (
+            html.escape(str(flight[k])) for k in
+            ("airline", "id", "from", "to", "date", "departure", "arrival")
+        )
+        stops = "Nonstop" if flight["stops"] == 0 else f"{flight['stops']} stop(s)"
+        st.markdown(f"""
+        <div class="flight-card">
+            <p class="detail">{airline} · {ident}</p>
+            <h3>{origin} → {destination}</h3>
+            <p>{day} · {departure} — {arrival} IST</p>
+            <p class="detail">{flight['duration']} minutes · {stops}</p>
+            <p class="fare">₹{flight['price']:,}</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-st.caption("Sample flights for design demonstration only")
-
-flights = [
-    {
-        "flight": "AI 101",
-        "departure": "08:30 AM",
-        "arrival": "10:45 AM",
-        "duration": 135,
-        "price": 5500,
-        "stops": 0
-    },
-    {
-        "flight": "AI 865",
-        "departure": "11:00 AM",
-        "arrival": "01:45 PM",
-        "duration": 165,
-        "price": 4200,
-        "stops": 1
-    },
-    {
-        "flight": "AI 678",
-        "departure": "05:00 PM",
-        "arrival": "07:10 PM",
-        "duration": 130,
-        "price": 6100,
-        "stops": 0
-    }
-]
-
-if nonstop:
-    flights = [f for f in flights if f["stops"] == 0]
-
-if sort_by == "Lowest price":
-    flights.sort(key=lambda f: f["price"])
-elif sort_by == "Shortest duration":
-    flights.sort(key=lambda f: f["duration"])
-
-for flight in flights:
-    stops_text = "Non-stop" if flight["stops"] == 0 else "1 stop"
-
-    st.markdown(f"""
-    <div class="flight-card">
-        <p><b> SkyAerovia· {flight["flight"]}</b></p>
-        <h3>Delhi (DEL) → Mumbai (BOM)</h3>
-        <p>{flight["departure"]} — {flight["arrival"]}</p>
-        <p>{flight["duration"]} minutes · {stops_text}</p>
-        <h3>₹{flight["price"]:,}</h3>
-    </div>
-    """, unsafe_allow_html=True)
