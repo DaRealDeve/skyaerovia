@@ -76,8 +76,11 @@ with st.sidebar:
         st.session_state.messages = [{"role": "assistant", "content": GREETING}]
         st.session_state.request = {}
         st.session_state.results = None
-        for name in ("sort_choice", "budget_enabled", "budget_value", "stops_choice"):
-            st.session_state.pop(name, None)
+        # Set widget values explicitly so the browser also resets its controls.
+        st.session_state.sort_choice = "Use chat preference"
+        st.session_state.budget_enabled = False
+        st.session_state.budget_value = 5000
+        st.session_state.stops_choice = "Use chat preference"
         st.rerun()
     st.subheader("Flight preferences")
     sort_choice = st.selectbox(
