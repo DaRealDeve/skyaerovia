@@ -47,18 +47,34 @@ def prepare_request(message, context, today, extract):
     if not isinstance(raw, dict):
         raise ValueError("Extractor must return a dictionary")
     intent = raw.get("intent", "unknown")
-    if intent in ("help", "book_flight", "cancel_booking", "flight_status"):
+    problems = getattr(raw, "problems", {})
+    problems = problems if isinstance(problems, dict) else {}
+    if intent in ("help", "book_flight", "cancel_booking", "flight_status") and not problems:
         return dict(context), "help", HELP
     state = dict(context)
     supplied = {k: raw[k] for k in FIELDS if raw.get(k) is not None}
-    if intent in ("unknown", "other") and not supplied:
+    if intent in ("unknown", "other") and not supplied and not problems:
         return state, "help", HELP
     state.update(supplied)
     state["intent"] = "search"
+    # An explicit rejected update must clear a previously saved value.
+    for field in ("date", "max_price", "sort_by"):
+        if field in problems:
+            state[field] = None
+    if "date" in problems:
+        state["asking"] = "date"
+        return state, "clarify", "Please give a valid travel date for today or later."
+    if "max_price" in problems:
+        state["asking"] = "max_price"
+        return state, "clarify", "Please give a valid positive maximum budget in rupees."
+    if "sort_by" in problems:
+        state["asking"] = "sort_by"
+        return state, "clarify", "I can sort by price or duration. Which would you prefer?"
     if intent == "cheapest":
         state["sort_by"] = "price"
     if state.get("sort_by") not in (None, "price", "duration"):
         state["sort_by"] = None
+        state["asking"] = "sort_by"
         return state, "clarify", "I can sort by price or duration. Which would you prefer?"
     for field in ("origin", "destination"):
         if state.get(field) and state[field] not in CITIES:
@@ -78,6 +94,7 @@ def prepare_request(message, context, today, extract):
     price = state.get("max_price")
     if price is not None and (isinstance(price, bool) or not isinstance(price, (int, float)) or not math.isfinite(price) or price < 0):
         state["max_price"] = None
+        state["asking"] = "max_price"
         return state, "clarify", "Please give a valid maximum budget in rupees."
     if state.get("non_stop") is not None and not isinstance(state["non_stop"], bool):
         state["non_stop"] = None
@@ -101,3 +118,4 @@ def find_matches(flights, state, sort_override=None, budget_override=None, stops
         max_price=budget_override if budget_override is not None else state.get("max_price"),
         non_stop=stops_override if stops_override is not None else bool(state.get("non_stop")),
     )
+

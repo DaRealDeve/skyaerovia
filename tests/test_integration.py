@@ -16,6 +16,32 @@ FLIGHTS = [
 
 
 class TestIntegration(unittest.TestCase):
+    def offline_prepare(self, message, context):
+        with patch.object(extractor, "extract_with_ai", side_effect=TimeoutError("offline")):
+            return prepare_request(message, context, TODAY, extractor.extract_request)
+
+    def test_rejected_new_date_clears_saved_date(self):
+        for message in ("yesterday", "31 sep", "kal gaya tha"):
+            with self.subTest(message=message):
+                original = dict(STATE)
+                state, status, _ = self.offline_prepare(message, original)
+                self.assertEqual((status, state["date"], state["asking"]), ("clarify", None, "date"))
+                self.assertEqual(original, STATE)
+
+    def test_invalid_budget_can_be_corrected_by_a_number(self):
+        for bad in ("under -100", "budget 0"):
+            with self.subTest(bad=bad):
+                state, status, _ = self.offline_prepare(bad, {**STATE, "max_price": 6000})
+                self.assertEqual((status, state["max_price"], state["asking"]), ("clarify", None, "max_price"))
+                state, status, _ = self.offline_prepare("5000", state)
+                self.assertEqual((status, state["max_price"]), ("ready", 5000))
+
+    def test_earliest_clarification_retains_route_and_accepts_choice(self):
+        state, status, _ = self.offline_prepare("earliest Delhi to Mumbai tomorrow", {})
+        self.assertEqual((status, state["asking"], state["origin"], state["destination"]), ("clarify", "sort_by", "Delhi", "Mumbai"))
+        state, status, _ = self.offline_prepare("duration", state)
+        self.assertEqual((status, state["sort_by"], state["date"]), ("ready", "duration", "2026-10-12"))
+
     def prepare(self, raw, state=None):
         return prepare_request("test", state or {}, TODAY, lambda *a: raw)
 
@@ -86,3 +112,4 @@ class TestIntegration(unittest.TestCase):
                         load_flights(path)
             path.write_text(json.dumps(FLIGHTS))
             self.assertEqual(load_flights(path),FLIGHTS)
+

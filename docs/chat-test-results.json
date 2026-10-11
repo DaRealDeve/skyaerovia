@@ -468,20 +468,17 @@
       "status": "clarify"
     },
     "actual": {
-      "status": "ready",
+      "status": "clarify",
       "origin": "Delhi",
       "destination": "Mumbai",
       "date": "2026-10-12",
-      "intent": "search"
+      "max_price": null,
+      "intent": "search",
+      "asking": "max_price"
     },
-    "reply": "",
-    "passed": false,
-    "mismatches": {
-      "status": {
-        "expected": "clarify",
-        "actual": "ready"
-      }
-    }
+    "reply": "Please give a valid positive maximum budget in rupees.",
+    "passed": true,
+    "mismatches": {}
   },
   {
     "id": "T25",
@@ -535,8 +532,9 @@
       "origin": "Delhi",
       "destination": "Mumbai",
       "date": "2026-10-12",
+      "intent": "search",
       "sort_by": null,
-      "intent": "search"
+      "asking": "sort_by"
     },
     "reply": "I can sort by price or duration. Which would you prefer?",
     "passed": true,
@@ -623,16 +621,11 @@
       "origin": "Delhi",
       "destination": "Mumbai",
       "date": "2026-10-12",
-      "non_stop": true
+      "non_stop": false
     },
     "reply": "",
-    "passed": false,
-    "mismatches": {
-      "non_stop": {
-        "expected": false,
-        "actual": true
-      }
-    }
+    "passed": true,
+    "mismatches": {}
   },
   {
     "id": "T32",
@@ -823,25 +816,16 @@
       "asking": "max_price"
     },
     "actual": {
-      "status": "help",
+      "status": "ready",
       "intent": "search",
       "origin": "Delhi",
       "destination": "Mumbai",
       "date": "2026-10-12",
-      "asking": "max_price"
+      "max_price": 5000
     },
-    "reply": "Tell me your departure city, destination and date. You can request cheapest or fastest flights, a budget, or nonstop flights. This demo cannot book tickets.",
-    "passed": false,
-    "mismatches": {
-      "status": {
-        "expected": "ready",
-        "actual": "help"
-      },
-      "max_price": {
-        "expected": 5000,
-        "actual": null
-      }
-    }
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
   },
   {
     "id": "T41",
@@ -854,28 +838,15 @@
       "date": "2026-10-12"
     },
     "actual": {
-      "status": "clarify",
+      "status": "ready",
       "origin": "Delhi",
-      "destination": null,
-      "intent": "search",
-      "asking": "destination"
+      "destination": "Mumbai",
+      "date": "2026-10-12",
+      "intent": "search"
     },
-    "reply": "Please choose your destination from: Delhi, Mumbai, Bengaluru, Chennai, Hyderabad, Kolkata, Pune, Ahmedabad.",
-    "passed": false,
-    "mismatches": {
-      "status": {
-        "expected": "ready",
-        "actual": "clarify"
-      },
-      "destination": {
-        "expected": "Mumbai",
-        "actual": null
-      },
-      "date": {
-        "expected": "2026-10-12",
-        "actual": null
-      }
-    }
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
   },
   {
     "id": "T42",
@@ -886,24 +857,15 @@
       "date": "2026-10-11"
     },
     "actual": {
-      "status": "clarify",
+      "status": "ready",
       "origin": "Delhi",
-      "destination": null,
-      "intent": "search",
-      "asking": "destination"
+      "destination": "Mumbai",
+      "date": "2026-10-11",
+      "intent": "search"
     },
-    "reply": "Please choose your destination from: Delhi, Mumbai, Bengaluru, Chennai, Hyderabad, Kolkata, Pune, Ahmedabad.",
-    "passed": false,
-    "mismatches": {
-      "status": {
-        "expected": "ready",
-        "actual": "clarify"
-      },
-      "date": {
-        "expected": "2026-10-11",
-        "actual": null
-      }
-    }
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
   },
   {
     "id": "T43",
@@ -968,25 +930,16 @@
       "non_stop": true
     },
     "actual": {
-      "status": "help",
+      "status": "ready",
       "intent": "search",
       "origin": "Delhi",
       "destination": "Mumbai",
       "date": "2026-10-12",
-      "non_stop": true
+      "non_stop": false
     },
-    "reply": "Tell me your departure city, destination and date. You can request cheapest or fastest flights, a budget, or nonstop flights. This demo cannot book tickets.",
-    "passed": false,
-    "mismatches": {
-      "status": {
-        "expected": "ready",
-        "actual": "help"
-      },
-      "non_stop": {
-        "expected": false,
-        "actual": true
-      }
-    }
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
   },
   {
     "id": "T46",
@@ -1015,21 +968,15 @@
       "date": "2026-10-12"
     },
     "actual": {
-      "status": "clarify",
+      "status": "ready",
       "origin": "Delhi",
-      "destination": null,
+      "destination": "Mumbai",
       "date": "2026-10-12",
-      "intent": "search",
-      "asking": "destination"
+      "intent": "search"
     },
-    "reply": "Please choose your destination from: Delhi, Mumbai, Bengaluru, Chennai, Hyderabad, Kolkata, Pune, Ahmedabad.",
-    "passed": false,
-    "mismatches": {
-      "status": {
-        "expected": "ready",
-        "actual": "clarify"
-      }
-    }
+    "reply": "",
+    "passed": true,
+    "mismatches": {}
   },
   {
     "id": "T48",
@@ -1044,8 +991,8 @@
       "status": "clarify",
       "origin": "Delhi",
       "destination": "Mumbai",
-      "date": null,
       "intent": "search",
+      "date": null,
       "asking": "date"
     },
     "reply": "Please give a valid travel date for today or later.",
@@ -1065,9 +1012,10 @@
       "origin": "Delhi",
       "destination": "Mumbai",
       "intent": "search",
+      "date": null,
       "asking": "date"
     },
-    "reply": "What date would you like to travel?",
+    "reply": "Please give a valid travel date for today or later.",
     "passed": true,
     "mismatches": {}
   },

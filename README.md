@@ -59,7 +59,8 @@ The app validates the file when loading it. Keep the demo dates current.
 ```sh
 python -m unittest discover -s tests -v
 ```
-26 tests cover search, integration and Streamlit interactions. Tests deliberately
+The combined suite runs 74 checks: 73 pass and one live Gemini test is skipped.
+It covers search, extractor, integration, Streamlit interactions and the API checker. Tests deliberately
 disable Gemini and use temporary simulated fixtures; they do not use API keys or
 replace the team's dataset. Passing these checks does not verify the live Gemini API.
 
@@ -79,3 +80,8 @@ Run `python scripts/run_chat_checks.py` for the 50 fixed-date fallback cases.
 Initial result: 43 passed, 7 failed. See `docs/testing-report.md` for exact inputs,
 expected values and actual results. The 26 unittest checks passed separately.
 Live Gemini and final app/deployment acceptance remain pending.
+
+## Extractor retest
+The 50 offline conversational cases now pass 50/50 after Ayman's fixes and the
+integration corrections. The earlier baseline was 43/50. See docs/extractor-review.md
+and docs/testing-report.md. Live Gemini and full-app/deployment tests remain pending.

@@ -1,10 +1,10 @@
 # SkyAerovia conversational test report
 
-Result: **43/50 passed; 7 failed.**
+Result: **50/50 passed; 0 failed.**
 
 Scope: deterministic offline keyword fallback plus the draft integration adapter. Fixed reference date: 2026-10-11 (IST). No API key or live Gemini call was used. Cases check status and the listed expected fields; passing does not guarantee every possible field is correct.
 
-This is an initial test round. Live Gemini, the team's flight dataset, final UI and deployed-app testing remain pending. The existing 26 automated search/integration/UI checks passed separately.
+Retest after Ayman's updated extractor and integration corrections. The original baseline was 43/50. The separate unittest round ran 74 checks: 73 passed and one live test skipped. Live Gemini, the team's flight dataset, final UI and deployed-app testing remain pending.
 
 ## Results
 
@@ -33,14 +33,14 @@ This is an initial test round. Live Gemini, the team's flight dataset, final UI 
 | T21 | Budget | Delhi to Mumbai tomorrow below 4500 | PASS |
 | T22 | Budget | Delhi to Mumbai tomorrow max Rs 6,000 | PASS |
 | T23 | Budget | Delhi to Mumbai tomorrow within 1 lakh | PASS |
-| T24 | Invalid budget | Delhi to Mumbai tomorrow under -100 | FAIL |
+| T24 | Invalid budget | Delhi to Mumbai tomorrow under -100 | PASS |
 | T25 | Sorting | cheapest Delhi to Mumbai tomorrow | PASS |
 | T26 | Sorting | fastest Delhi to Mumbai tomorrow | PASS |
 | T27 | Unsupported sorting | earliest Delhi to Mumbai tomorrow | PASS |
 | T28 | Stops | nonstop flights Delhi to Mumbai tomorrow | PASS |
 | T29 | Stops | direct flights Delhi to Mumbai tomorrow | PASS |
 | T30 | Stops | no layovers flights Delhi to Mumbai tomorrow | PASS |
-| T31 | Clear nonstop preference | Delhi to Mumbai tomorrow, stops are fine | FAIL |
+| T31 | Clear nonstop preference | Delhi to Mumbai tomorrow, stops are fine | PASS |
 | T32 | Missing details | from Delhi | PASS |
 | T33 | Missing details | flights to Mumbai tomorrow | PASS |
 | T34 | Missing details | Delhi to Mumbai | PASS |
@@ -49,61 +49,19 @@ This is an initial test round. Live Gemini, the team's flight dataset, final UI 
 | T37 | Follow-up city | Delhi | PASS |
 | T38 | Follow-up date | tomorrow | PASS |
 | T39 | Follow-up sorting | the cheapest | PASS |
-| T40 | Follow-up budget | 5000 | FAIL |
-| T41 | Hinglish | Delhi se Mumbai kal | FAIL |
-| T42 | Hinglish | Delhi to Mumbai aaj | FAIL |
+| T40 | Follow-up budget | 5000 | PASS |
+| T41 | Hinglish | Delhi se Mumbai kal | PASS |
+| T42 | Hinglish | Delhi to Mumbai aaj | PASS |
 | T43 | Hinglish | Dilli se Mumbai tomorrow | PASS |
 | T44 | Hinglish | 5000 se kam | PASS |
-| T45 | Hinglish preference | layover chalega | FAIL |
+| T45 | Hinglish preference | layover chalega | PASS |
 | T46 | City typo | Delih to Mumbai tomorrow | PASS |
-| T47 | Date typo | Delhi to Mumbai tomorow | FAIL |
+| T47 | Date typo | Delhi to Mumbai tomorow | PASS |
 | T48 | Past date | Delhi to Mumbai 2026-10-05 | PASS |
 | T49 | Invalid date | Delhi to Mumbai 2026-02-30 | PASS |
 | T50 | Unsupported city | Delhi to Goa tomorrow | PASS |
 
 ## Failures to resolve before final acceptance
-
-### T24: Delhi to Mumbai tomorrow under -100
-
-Context: `{}`
-
-Mismatch: `{"status": {"expected": "clarify", "actual": "ready"}}`
-
-### T31: Delhi to Mumbai tomorrow, stops are fine
-
-Context: `{"intent": "search", "origin": "Delhi", "destination": "Mumbai", "date": "2026-10-12", "non_stop": true}`
-
-Mismatch: `{"non_stop": {"expected": false, "actual": true}}`
-
-### T40: 5000
-
-Context: `{"intent": "search", "origin": "Delhi", "destination": "Mumbai", "date": "2026-10-12", "asking": "max_price"}`
-
-Mismatch: `{"status": {"expected": "ready", "actual": "help"}, "max_price": {"expected": 5000, "actual": null}}`
-
-### T41: Delhi se Mumbai kal
-
-Context: `{}`
-
-Mismatch: `{"status": {"expected": "ready", "actual": "clarify"}, "destination": {"expected": "Mumbai", "actual": null}, "date": {"expected": "2026-10-12", "actual": null}}`
-
-### T42: Delhi to Mumbai aaj
-
-Context: `{}`
-
-Mismatch: `{"status": {"expected": "ready", "actual": "clarify"}, "date": {"expected": "2026-10-11", "actual": null}}`
-
-### T45: layover chalega
-
-Context: `{"intent": "search", "origin": "Delhi", "destination": "Mumbai", "date": "2026-10-12", "non_stop": true}`
-
-Mismatch: `{"status": {"expected": "ready", "actual": "help"}, "non_stop": {"expected": false, "actual": true}}`
-
-### T47: Delhi to Mumbai tomorow
-
-Context: `{}`
-
-Mismatch: `{"status": {"expected": "ready", "actual": "clarify"}}`
 
 ## Ownership and next round
 

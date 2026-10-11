@@ -6,10 +6,9 @@ Checked on 11 October 2026 from Tarun's computer.
 - Verified HTTPS through the SDK's HTTP transport reaches Google's server.
 - The unauthenticated connection check receives HTTP 403, which is expected
   without an API key. This does not prove Gemini authentication or generation.
-- All 33 automated search/integration/UI/checker tests pass. Live calls are
-  mocked in those tests; no real key is used.
-- The separate 50-case fallback baseline remains 43 passed / 7 failed until
-  Ayman's updated extractor is received and tested.
+- The combined suite runs 74 checks: 73 pass and one live test is skipped.
+  Other AI calls use mocks; no real key is used.
+- The 50-case fallback retest passes 50/50. The previous baseline was 43/50.
 - Live Gemini remains PENDING. Tarun confirmed the exposed key has not been
   replaced. No exposed key was used.
 
@@ -47,13 +46,6 @@ availability. Do not disable certificate verification to fix a network failure.
 
 ## Ayman's updated code
 
-The attached handoff note reports 31 passing tests and one skipped live test.
-The attachment contains a summary, not updated Python code. At the last GitHub
-check, main and durranyayman2-patch-1 still contain the original extractor blob
-def9be636282f5e638dff6833902ee25d264f73b, and no fixes PR was present.
-
-Ayman must upload his updated extractor.py and tests/test_extractor.py on a
-branch created from main and provide the fixes PR link. Review that exact code
-before copying it into the integration. Its result.problems validation metadata
-also needs an integration check, especially for an invalid/past date replacing
-an already saved valid date. The handoff summary alone cannot verify that fix.
+The actual Python files have now been reviewed. The fixes are submitted on a
+branch created from main and included in the integration draft for retesting.
+See docs/extractor-review.md. Live Gemini still awaits a replacement key.
