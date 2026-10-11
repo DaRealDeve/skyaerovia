@@ -9,9 +9,9 @@ The demo cannot book tickets or process payments. All flight results are simulat
 Pending team deliverables:
 - Yashvardhan: root-level `flights.json` (60 flights, eight supported cities, next seven days).
 - Richa: final navy/blue interface.
-- Ayman: extractor compatibility fixes and live Gemini tests with Ayush.
-- Ayush: complete end-to-end test report.
-- Shivam: report, deck and demo after integration.
+- Ayman: extractor compatibility fixes; live Gemini tests with Tarun and Codex.
+- Tarun and Codex: Ayush's 50-case QA, bug report, live API checks and final end-to-end tests. Ayush remains a team member.
+- Tarun and Codex: Shivam's report, deck, screenshots and demo. Shivam remains a team member.
 
 ## Run locally
 Use Python 3.12. From the project folder:
@@ -73,3 +73,9 @@ After the pending files and live API test are complete, deploy this repository's
 main branch with `app.py` on Streamlit Community Cloud. Add `GEMINI_API_KEY` in
 Streamlit Secrets. Test searches, missing details, filters, fallback and reset on the
 deployed app before using it for the final demo.
+
+## Conversational QA
+Run `python scripts/run_chat_checks.py` for the 50 fixed-date fallback cases.
+Initial result: 43 passed, 7 failed. See `docs/testing-report.md` for exact inputs,
+expected values and actual results. The 26 unittest checks passed separately.
+Live Gemini and final app/deployment acceptance remain pending.
