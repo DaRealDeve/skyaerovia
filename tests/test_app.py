@@ -54,7 +54,7 @@ class TestApp(unittest.TestCase):
         self.assertEqual(len(cards), 1)
         self.assertIn("Demo Air · F1", cards[0])
         self.assertNotIn("Demo Air · F2", cards[0])
-        app.button[0].click().run()
+        app.button(key="clear_chat").click().run()
         self.assertEqual(app.session_state["request"],{})
         self.assertIsNone(app.session_state["results"])
         self.assertEqual(len(app.session_state["messages"]),1)
@@ -81,7 +81,7 @@ class TestApp(unittest.TestCase):
         cards = [m.value for m in app.markdown if '<div class="flight-card">' in m.value]
         self.assertEqual(len(cards), 1)
         self.assertIn("CHEAP", cards[0])
-        app.button[0].click().run()
+        app.button(key="clear_chat").click().run()
         self.assertEqual(app.selectbox[0].value, "Use chat preference")
         self.assertEqual(app.selectbox[1].value, "Use chat preference")
         self.assertFalse(app.checkbox[0].value)

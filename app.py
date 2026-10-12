@@ -1,6 +1,7 @@
 """SkyAerovia: Richa's navy/blue frontend connected to Skye and demo search."""
 import html
 import os
+import re
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -9,6 +10,8 @@ import streamlit as st
 
 from extractor import extract_request
 from integration import CITIES, find_matches, load_flights, prepare_request
+from booking_ui import navigate, start_booking, open_cancellation, render_booking_page
+from bookings import departure_time
 
 st.set_page_config(page_title="SkyAerovia | Skye", page_icon="✈️", layout="wide")
 ROOT = Path(__file__).resolve().parent
@@ -62,7 +65,9 @@ else:
 GREETING = "Namaste! I'm Skye, your SkyAerovia flight assistant. Tell me your departure city, destination and travel date. You can also ask for a budget, nonstop flights or the shortest journey."
 for name, default in (
     ("messages", [{"role": "assistant", "content": GREETING}]),
-    ("request", {}), ("results", None)
+    ("request", {}), ("results", None), ("view", "search"), ("booking_refs", []),
+    ("selected_flight", None), ("last_ticket", None), ("cancel_reference", ""),
+    ("cancel_ticket", None), ("cancel_confirming", False), ("cancel_notice", None)
 ):
     if name not in st.session_state:
         st.session_state[name] = default
@@ -76,6 +81,7 @@ with st.sidebar:
         st.session_state.messages = [{"role": "assistant", "content": GREETING}]
         st.session_state.request = {}
         st.session_state.results = None
+        st.session_state.view = "search"
         # Set widget values explicitly so the browser also resets its controls.
         st.session_state.sort_choice = "Use chat preference"
         st.session_state.budget_enabled = False
@@ -83,6 +89,7 @@ with st.sidebar:
         st.session_state.stops_choice = "Use chat preference"
         st.rerun()
     st.subheader("Flight preferences")
+    st.caption("Clear chat keeps your demo tickets.")
     sort_choice = st.selectbox(
         "Sort flights", ["Use chat preference", "Lowest price", "Shortest duration"],
         key="sort_choice"
@@ -106,7 +113,15 @@ st.markdown("""
     <p>Your way through the sky. Find your next journey with Skye.</p>
 </div>
 """, unsafe_allow_html=True)
-st.caption("Student demo · Simulated flights · No ticket booking or payments")
+st.caption("Student demo · Simulated flights and reservations · No payments")
+st.write("**What would you like to do?**")
+search_action, tickets_action, cancel_action = st.columns(3)
+search_action.button("Find flights", key="nav_search", on_click=navigate, args=("search",), use_container_width=True)
+tickets_action.button("My demo tickets", key="nav_tickets", on_click=navigate, args=("tickets",), use_container_width=True)
+cancel_action.button("Cancel a ticket", key="nav_cancel", on_click=open_cancellation, use_container_width=True)
+if st.session_state.view != "search":
+    render_booking_page(ROOT, flights)
+    st.stop()
 if flights:
     first_date = min(f["date"] for f in flights)
     last_date = max(f["date"] for f in flights)
@@ -122,6 +137,14 @@ for message in st.session_state.messages:
 
 if prompt := st.chat_input("For example: Delhi to Mumbai tomorrow under 5000", max_chars=2000):
     st.session_state.messages.append({"role": "user", "content": prompt})
+    # Guest ticket actions are deterministic and never delegated to the AI.
+    if re.search(r"\b(?:cancel|cancellation)\b", prompt, re.IGNORECASE):
+        open_cancellation()
+        reference = re.search(r"SKY-(?:[0-9a-f]{4}-){4}[0-9a-f]{4}", prompt, re.IGNORECASE)
+        if reference:
+            st.session_state.cancel_reference = reference.group(0)
+        st.session_state.messages.append({"role": "assistant", "content": "Enter your saved demo reference, review the ticket, then confirm cancellation."})
+        st.rerun()
     st.session_state.results = None
     with st.spinner("Skye is checking your request…"):
         try:
@@ -168,4 +191,9 @@ if flights is not None and st.session_state.results:
             <p class="fare">₹{flight['price']:,}</p>
         </div>
         """, unsafe_allow_html=True)
+        departed = departure_time(flight) <= datetime.now(ZoneInfo("Asia/Kolkata"))
+        st.button("Book demo ticket", key="book_" + flight["id"], type="primary",
+                  disabled=departed, on_click=start_booking, args=(flight["id"],))
+        if departed:
+            st.caption("This departure time has passed. Choose a later flight to create a demo ticket.")
 

@@ -6,3 +6,8 @@ __pycache__/
 .env.*
 .streamlit/secrets.toml
 .DS_Store
+.data/
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
