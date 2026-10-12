@@ -1,4 +1,4 @@
-"""Guided guest demo booking and cancellation, written for SkyAerovia."""
+"""Guided account-owned demo booking, history and cancellation."""
 import secrets
 import sqlite3
 import streamlit as st
@@ -11,6 +11,7 @@ from ticket_pdf import ticket_pdf
 
 def navigate(view):
     st.session_state.view = view
+    if view=='tickets':st.session_state.ticket_page=0
 
 
 def start_booking(flight_id, cabin="Economy"):
@@ -61,7 +62,10 @@ def show_quote(quote):
 
 def render_booking_page(root, flights):
     try:
-        store = booking_store(root)
+        user=st.session_state.get('account_user')
+        if not user:
+            st.warning('Please log in to open your tickets.');return
+        store = booking_store(root).for_account(user['id'])
         _render(store, flights)
     except (sqlite3.Error, OSError, StorageError):
         st.error('Demo tickets are temporarily unavailable. Please try again shortly.')
@@ -128,21 +132,41 @@ def _render(store, flights):
         st.button('Back to flight results', on_click=navigate, args=('search',))
     elif view == 'tickets':
         st.subheader('My demo tickets')
-        st.caption('Tickets created in this browser session. You can look up another ticket with its saved reference.')
-        tickets = [store.get(ref) for ref in reversed(st.session_state.booking_refs)]
-        tickets = [ticket for ticket in tickets if ticket]
+        st.caption('All tickets linked to your account, including bookings from other devices.')
+        page=st.session_state.get('ticket_page',0)
+        tickets,more=store.history(page)
         if not tickets:
-            st.info('You haven’t created a demo ticket in this session yet.')
+            st.info('No tickets are linked to your account yet.' if page==0 else 'No more tickets on this page.')
         for ticket in tickets:
             with st.container(border=True):
                 summary(ticket)
                 if ticket['status'] == 'confirmed':
                     st.button('Cancel this ticket', key='cancel_' + ticket['reference'],
                               on_click=open_cancellation, args=(ticket['reference'],))
-        st.button('Look up a ticket by reference', on_click=open_cancellation)
+        previous,next_page=st.columns(2)
+        if page>0 and previous.button('Previous tickets'):
+            st.session_state.ticket_page=page-1;st.rerun()
+        if more and next_page.button('More tickets'):
+            st.session_state.ticket_page=page+1;st.rerun()
+        with st.expander('Add an older demo ticket to my account'):
+            st.caption('For tickets created before accounts were linked: enter the complete saved reference once. Only an unlinked ticket can be added. Keep the reference private.')
+            with st.form('claim_older_ticket'):
+                older=st.text_input('Older ticket reference',placeholder='SKY-XXXX-XXXX-XXXX-XXXX-XXXX',key='older_ticket_reference')
+                if st.form_submit_button('Add to my account'):
+                    try:claimed=store.claim_older(older)
+                    except ValueError as error:st.warning(str(error))
+                    else:
+                        if claimed:
+                            st.session_state.ticket_page=0
+                            st.session_state.claim_notice='Your older ticket is now linked to your account.'
+                            st.rerun()
+                        else:st.warning('No unlinked ticket was found for this reference. Check the ID or use the account already linked to it.')
+        if st.session_state.get('claim_notice'):st.success(st.session_state.claim_notice)
+        st.button('Find or cancel my ticket by reference', on_click=open_cancellation)
+
     elif view == 'cancel':
         st.subheader('Find or cancel a demo ticket')
-        st.caption('Paste the full reference from your downloaded ticket. Only confirm cancellation after reviewing the details.')
+        st.caption('Enter a reference for a ticket linked to your account. For an older unlinked ticket, add it under My demo tickets first.')
         value = st.text_input('Demo booking reference', key='cancel_reference', placeholder='SKY-XXXX-XXXX-XXXX-XXXX-XXXX')
         try:
             normalized = normalize_reference(value)
@@ -154,7 +178,7 @@ def _render(store, flights):
             if not normalized:
                 st.warning('Enter the complete SKY reference from your demo ticket.')
             elif store.get(normalized) is None:
-                st.warning('No demo ticket was found for that reference. Check the ID; demo records may have reset.')
+                st.warning('No demo ticket was found in your account for that reference. Check the ID; add older tickets under My demo tickets first.')
             else:
                 st.session_state.cancel_ticket = normalized
         if st.session_state.cancel_ticket:

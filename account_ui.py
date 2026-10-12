@@ -89,7 +89,7 @@ def go_account(mode):
 def clear_journey():
     # Clear only this session's history; database tickets are retained.
     for key in ('messages','request','results','booking_refs','selected_flight','last_ticket',
-                'cancel_reference','cancel_ticket','cancel_confirming','cancel_notice','booking_token',
+                'ticket_page','claim_notice','older_ticket_reference','cancel_reference','cancel_ticket','cancel_confirming','cancel_notice','booking_token',
                 'sort_choice','budget_enabled','budget_value','stops_choice','airline_choices','time_choice',
                 'preferred_cabin','form_origin','form_destination','form_date','login_email','register_name','register_email'):
         st.session_state.pop(key,None)
