@@ -15,6 +15,7 @@ from bookings import departure_time
 from schedule import load_app_flights
 from city_catalog import AIRLINES
 from flight_ui import CSS, schedule_header, search_form, filtered_matches, empty_message, cards
+from account_ui import render_accounts, go_account, log_out, account_intent
 
 st.set_page_config(page_title="SkyAerovia | Skye", page_icon="✈️", layout="wide")
 ROOT = Path(__file__).resolve().parent
@@ -112,11 +113,19 @@ if st.session_state.view == "search":
 st.subheader("Chat with Skye")
 with st.chat_message("assistant"):
     st.write(GREETING)
+    account_user = render_accounts()
     with st.container(border=True, key="quick_actions"):
         st.write("**What would you like to do next?**")
+        if account_user:
+            st.button("Log out", key="nav_logout", on_click=log_out, use_container_width=True)
+        else:
+            st.button("Log in", key="nav_login", on_click=go_account, args=("login",), use_container_width=True)
+            st.button("Register", key="nav_register", on_click=go_account, args=("register",), use_container_width=True)
         st.button("Find flights", key="nav_search", on_click=navigate, args=("search",), use_container_width=True)
         st.button("My demo tickets", key="nav_tickets", on_click=navigate, args=("tickets",), use_container_width=True)
         st.button("Cancel a ticket", key="nav_cancel", on_click=open_cancellation, use_container_width=True)
+if st.session_state.view in ("login", "register"):
+    st.stop()
 if st.session_state.view != "search":
     render_booking_page(ROOT, flights)
     st.stop()
@@ -125,6 +134,10 @@ for message in st.session_state.messages[1:]:
         st.write(message["content"])
 
 if prompt := st.chat_input("For example: Delhi to Mumbai tomorrow under 5000", max_chars=2000):
+    # Account commands open secure fields without recording credentials in chat.
+    if intent := account_intent(prompt):
+        go_account(intent)
+        st.rerun()
     st.session_state.messages.append({"role": "user", "content": prompt})
     # Guest ticket actions are deterministic and never delegated to the AI.
     if re.search(r"\b(?:cancel|cancellation)\b", prompt, re.IGNORECASE):

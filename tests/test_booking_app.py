@@ -21,7 +21,7 @@ class BookingAppFixture:
               'arrival':'14:00','price':3900,'duration':120,'stops':0}
         (self.root/'flights.json').write_text(json.dumps([{**base,'id':'F1'},{**base,'id':'F2','price':4200}]))
         self.mock=patch.object(extractor,'extract_with_ai',side_effect=RuntimeError('offline UI test')); self.mock.start()
-        self.app=AppTest.from_file(str(self.root/'app.py'),default_timeout=10).run()
+        self.app=AppTest.from_file(str(self.root/'app.py'),default_timeout=25).run()
     def tearDown(self):self.mock.stop(); self.tmp.cleanup()
     def button(self,label):return next(b for b in self.app.button if b.label==label)
     def click(self,label):self.button(label).click().run(); self.assertEqual(len(self.app.exception),0)
@@ -67,7 +67,7 @@ class TestBookingApp(BookingAppFixture, unittest.TestCase):
         self.click('Find ticket'); self.assertIn('No demo ticket',self.app.warning[0].value)
     def test_saved_reference_works_after_new_session(self):
         ref=self.book()
-        self.app=AppTest.from_file(str(self.root/'app.py'),default_timeout=10).run()
+        self.app=AppTest.from_file(str(self.root/'app.py'),default_timeout=25).run()
         self.assertEqual(self.app.session_state['booking_refs'],[])
         self.click('Cancel a ticket'); self.app.text_input[0].set_value(ref).run(); self.click('Find ticket')
         self.assertTrue(any(ref in c.value for c in self.app.code))

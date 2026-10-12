@@ -80,3 +80,11 @@ Quick choices sit directly below Skye's greeting: **Find flights**, **My demo ti
 ## Persistent database setup
 
 Set `DATABASE_URL` privately in Streamlit Cloud Secrets using the dedicated Neon PostgreSQL connection for this app. Keep the existing Gemini entries. Do not commit the URL or paste the password in chat. `storage.py` sanitizes database failures and uses bound query parameters and atomic seat/booking transactions. The Neon project is on the connected free plan; provider quotas/lifecycle still apply. Login/registration and updated report/PPT/video remain deferred.
+
+
+### Chat accounts
+Choose **Register** below Skye's welcome message to create an account with a name, email and password (8–128 characters). Choose **Log in** to return; **Log out** ends this app's login. These forms are inside the assistant chat, and passwords are never sent to Gemini or appended to chat history.
+
+Neon Managed Auth owns the accounts and password hashing. The Streamlit server calls the branch's documented HTTPS Auth API, keeping the provider session cookie server-side; this avoids third-party-cookie failures in embedded/Safari browsers. The public Auth URL is configuration, not a secret. Provider-signed EdDSA tokens are verified server-side for signature, issuer, audience and expiration. A short-lived token in browser sessionStorage restores the current tab after reload; passwords and provider cookies are not written there. Login may be requested again when that token expires after a reload or when the tab is closed. A live server session can refresh through the provider cookie. Logout removes the browser token and clears app identity; an already-issued JWT has its ordinary expiry window.
+
+This update adds account registration/login only. Guest flight search, booking-reference retrieval/cancellation and ticket storage continue as before. Accounts do not yet claim, group or protect older guest bookings. Email verification is not enabled for this student demo; an entered email is not proof of email ownership. No social sign-in or password-reset flow is included in this stage.
