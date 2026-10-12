@@ -15,12 +15,41 @@ from bookings import departure_time
 from schedule import load_app_flights
 from city_catalog import AIRLINES
 from flight_ui import CSS, schedule_header, search_form, filtered_matches, empty_message, cards
-from account_ui import render_accounts, go_account, log_out, account_intent
+from account_ui import render_accounts, restore_account, go_account, log_out, account_intent
 
 st.set_page_config(page_title="SkyAerovia | Skye", page_icon="✈️", layout="wide")
 ROOT = Path(__file__).resolve().parent
 LOGO = ROOT / "assets" / "logo.jpg"
 st.markdown(CSS, unsafe_allow_html=True)
+
+GREETING = "Namaste! I'm Skye, your SkyAerovia flight assistant. Tell me your departure city, destination and travel date. You can also ask for a budget, nonstop flights or the shortest journey."
+for name, default in (
+    ("messages", [{"role": "assistant", "content": GREETING}]),
+    ("request", {}), ("results", None), ("view", "search"), ("booking_refs", []),
+    ("selected_flight", None), ("last_ticket", None), ("cancel_reference", ""),
+    ("cancel_ticket", None), ("cancel_confirming", False), ("cancel_notice", None)
+):
+    if name not in st.session_state:
+        st.session_state[name] = default
+
+
+account_user = restore_account()
+if not account_user:
+    # Stop before the route form, chat, flight data and ticket handlers.
+    if st.session_state.view not in ("login", "register"):
+        st.session_state.view = "welcome"
+    if LOGO.exists():
+        st.image(str(LOGO), width=210)
+    st.title("Welcome to SkyAerovia")
+    st.caption("Your way through the sky")
+    st.write("Register or log in to begin your journey.")
+    with st.container(border=True, key="account_entry"):
+        st.button("Register", key="nav_register", on_click=go_account, args=("register",), use_container_width=True)
+        st.button("Log in", key="nav_login", on_click=go_account, args=("login",), use_container_width=True)
+    render_accounts(restore=False)
+    st.stop()
+if st.session_state.view in ("welcome", "login", "register"):
+    st.session_state.view = "search"
 
 # Read credentials only from the environment or private Streamlit secrets.
 for setting in ("GEMINI_API_KEY", "GEMINI_MODEL"):
@@ -46,20 +75,12 @@ else:
     if flights is None:
         st.warning("Flight results are waiting for the demo data. You can still tell Skye your travel preferences.")
 
-GREETING = "Namaste! I'm Skye, your SkyAerovia flight assistant. Tell me your departure city, destination and travel date. You can also ask for a budget, nonstop flights or the shortest journey."
-for name, default in (
-    ("messages", [{"role": "assistant", "content": GREETING}]),
-    ("request", {}), ("results", None), ("view", "search"), ("booking_refs", []),
-    ("selected_flight", None), ("last_ticket", None), ("cancel_reference", ""),
-    ("cancel_ticket", None), ("cancel_confirming", False), ("cancel_notice", None)
-):
-    if name not in st.session_state:
-        st.session_state[name] = default
 
 with st.sidebar:
     if LOGO.exists():
         st.image(str(LOGO), width=230)
     st.caption("Your way through the sky")
+    st.button("Log out", key="nav_logout", on_click=log_out, use_container_width=True)
     st.divider()
     if st.button("Clear chat", key="clear_chat", use_container_width=True):
         st.session_state.messages = [{"role": "assistant", "content": GREETING}]
@@ -113,19 +134,12 @@ if st.session_state.view == "search":
 st.subheader("Chat with Skye")
 with st.chat_message("assistant"):
     st.write(GREETING)
-    account_user = render_accounts()
+    account_user = render_accounts(restore=False)
     with st.container(border=True, key="quick_actions"):
         st.write("**What would you like to do next?**")
-        if account_user:
-            st.button("Log out", key="nav_logout", on_click=log_out, use_container_width=True)
-        else:
-            st.button("Log in", key="nav_login", on_click=go_account, args=("login",), use_container_width=True)
-            st.button("Register", key="nav_register", on_click=go_account, args=("register",), use_container_width=True)
         st.button("Find flights", key="nav_search", on_click=navigate, args=("search",), use_container_width=True)
         st.button("My demo tickets", key="nav_tickets", on_click=navigate, args=("tickets",), use_container_width=True)
         st.button("Cancel a ticket", key="nav_cancel", on_click=open_cancellation, use_container_width=True)
-if st.session_state.view in ("login", "register"):
-    st.stop()
 if st.session_state.view != "search":
     render_booking_page(ROOT, flights)
     st.stop()

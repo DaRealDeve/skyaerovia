@@ -1,4 +1,5 @@
 import json
+import time
 from datetime import datetime, timedelta
 from pathlib import Path
 import shutil
@@ -22,6 +23,10 @@ class BookingAppFixture:
         (self.root/'flights.json').write_text(json.dumps([{**base,'id':'F1'},{**base,'id':'F2','price':4200}]))
         self.mock=patch.object(extractor,'extract_with_ai',side_effect=RuntimeError('offline UI test')); self.mock.start()
         self.app=AppTest.from_file(str(self.root/'app.py'),default_timeout=25).run()
+        self.sign_in_test_session()
+    def sign_in_test_session(self):
+        self.app.session_state['account_user']={'id':'test-user','name':'Demo','email':'demo@example.com','expires':time.time()+900}
+        self.app.run()
     def tearDown(self):self.mock.stop(); self.tmp.cleanup()
     def button(self,label):return next(b for b in self.app.button if b.label==label)
     def click(self,label):self.button(label).click().run(); self.assertEqual(len(self.app.exception),0)
@@ -69,6 +74,7 @@ class TestBookingApp(BookingAppFixture, unittest.TestCase):
         ref=self.book()
         self.app=AppTest.from_file(str(self.root/'app.py'),default_timeout=25).run()
         self.assertEqual(self.app.session_state['booking_refs'],[])
+        self.sign_in_test_session()
         self.click('Cancel a ticket'); self.app.text_input[0].set_value(ref).run(); self.click('Find ticket')
         self.assertTrue(any(ref in c.value for c in self.app.code))
     def test_cancellation_chat_opens_guided_flow(self):

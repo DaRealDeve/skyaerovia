@@ -34,23 +34,45 @@ class TestIdentityVerification(unittest.TestCase):
             self.assertIsNone(account_ui.verify_identity(self.token(),'https://auth.example.com/demo/auth'))
 
 class TestChatAccounts(BookingAppFixture,unittest.TestCase):
-    def test_login_and_register_buttons_open_chat_forms(self):
-        self.click('Log in');self.assertEqual(self.app.session_state['view'],'login');self.assertFalse(self.app.chat_input)
-        self.click('Register');self.assertEqual(self.app.session_state['view'],'register')
-        self.click('Find flights');self.assertEqual(self.app.session_state['view'],'search');self.assertTrue(self.app.chat_input)
-    def test_account_command_does_not_record_or_extract_password(self):
+    def logged_out(self):self.click('Log out')
+    def test_first_screen_only_has_register_and_login(self):
+        self.logged_out()
+        self.assertEqual([b.label for b in self.app.button],['Register','Log in'])
+        self.assertFalse(self.app.chat_input);self.assertFalse(self.app.selectbox)
+        self.assertFalse(self.app.sidebar.button)
+    def test_forms_never_reveal_flight_features(self):
+        self.logged_out();self.click('Register')
+        self.assertEqual([t.label for t in self.app.text_input],['Your name','Email','Password','Confirm password'])
+        self.assertFalse(self.app.chat_input);self.assertFalse(self.app.selectbox)
+        self.app.button(key='nav_login').click().run()
+        self.assertEqual([t.label for t in self.app.text_input],['Email','Password'])
+        self.assertFalse(self.app.chat_input)
+    def test_authenticated_session_unlocks_every_requested_option(self):
+        self.assertTrue(self.app.selectbox(key='form_origin'));self.assertTrue(self.app.chat_input)
+        for label in ['Find flights','My demo tickets','Cancel a ticket']:self.assertTrue(self.button(label))
+        self.assertFalse(any(b.label in ('Register','Log in') for b in self.app.button))
+    def test_account_command_does_not_record_password(self):
         self.app.chat_input[0].set_value('login demo@example.com sample-password').run()
-        self.assertEqual(self.app.session_state['view'],'login')
         self.assertNotIn('sample-password',str(self.app.session_state['messages']))
-    def test_logout_clears_account_but_preserves_booking_references(self):
-        self.app.session_state['account_user']={'id':'test','name':'Demo','email':'demo@example.com','expires':time.time()+900}
-        self.app.session_state['booking_refs']=['SAVED-TEST-REF'];self.app.run()
-        self.click('Log out')
-        self.assertIsNone(self.app.session_state['account_user']);self.assertEqual(self.app.session_state['booking_refs'],['SAVED-TEST-REF'])
-        self.assertTrue(self.app.session_state['account_clear'])
+    def test_logout_clears_session_history_but_keeps_database_ticket(self):
+        ref=self.book();self.logged_out()
+        self.assertIsNone(self.app.session_state['account_user'])
+        self.assertEqual(self.app.session_state['booking_refs'],[])
+        self.assertEqual(self.store().get(ref)['status'],'confirmed')
+        self.assertFalse(self.app.chat_input);self.assertFalse(self.app.selectbox)
+    def test_expired_login_blocks_stale_ticket_view(self):
+        self.app.session_state['account_user']['expires']=time.time()-20
+        self.app.session_state['view']='cancel';self.app.run()
+        self.assertEqual([b.label for b in self.app.button],['Register','Log in'])
+        self.assertFalse(self.app.chat_input);self.assertFalse(self.app.text_input)
+    def test_selected_route_without_login_cannot_bypass_gate(self):
+        self.logged_out();self.app.session_state['view']='search'
+        self.app.session_state['results']={'origin':'Delhi','destination':'Mumbai','date':'2026-11-25'}
+        self.app.run()
+        self.assertFalse(self.app.chat_input);self.assertFalse(self.app.selectbox)
+        self.assertEqual([b.label for b in self.app.button],['Register','Log in'])
     def test_clear_chat_keeps_login(self):
-        self.app.session_state['account_user']={'id':'test','name':'Demo','email':'demo@example.com','expires':time.time()+900}
-        self.app.run();self.click('Clear chat');self.assertEqual(self.app.session_state['account_user']['id'],'test')
+        self.click('Clear chat');self.assertEqual(self.app.session_state['account_user']['id'],'test-user')
 
 class TestRegistrationValidation(unittest.TestCase):
     def test_valid_and_invalid_registration_fields(self):

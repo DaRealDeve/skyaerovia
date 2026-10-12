@@ -86,6 +86,14 @@ def go_account(mode):
     st.session_state.account_notice=None
     st.session_state.account_error=None
 
+def clear_journey():
+    # Clear only this session's history; database tickets are retained.
+    for key in ('messages','request','results','booking_refs','selected_flight','last_ticket',
+                'cancel_reference','cancel_ticket','cancel_confirming','cancel_notice','booking_token',
+                'sort_choice','budget_enabled','budget_value','stops_choice','airline_choices','time_choice',
+                'preferred_cabin','form_origin','form_destination','form_date','login_email','register_name','register_email'):
+        st.session_state.pop(key,None)
+
 def log_out():
     gateway=st.session_state.pop('account_gateway',None)
     if gateway:
@@ -95,7 +103,8 @@ def log_out():
     st.session_state.account_token=None
     st.session_state.account_clear=True
     st.session_state.account_notice='You are logged out.'
-    st.session_state.view='search'
+    clear_journey()
+    st.session_state.view='welcome'
 
 def validate_registration(name,email,password,confirm):
     if not name or len(name)>60:return 'Enter your name, up to 60 characters.'
@@ -141,11 +150,18 @@ def session_bridge(url):
             token,user=gateway.refresh()
             st.session_state.account_token=token
             st.session_state.account_user=user
+            if not user:
+                st.session_state.account_clear=True
+                clear_journey()
+                st.session_state.view='welcome'
+                st.rerun()
         except AccountError:pass
     if user and user.get('expires',0)<=time.time():
         st.session_state.account_user=None;st.session_state.account_token=None
         st.session_state.account_clear=True
         st.session_state.account_notice='Your login has expired. Please log in again.'
+        clear_journey()
+        st.session_state.view='welcome'
         st.rerun()
     bridge=components.component('skye_account_session',js=BRIDGE_JS)
     result=bridge(data={'url':url,'token':st.session_state.get('account_token'),'clear':st.session_state.get('account_clear',False)},key='skye_account_session',on_restored_change=lambda:None)
@@ -159,10 +175,20 @@ def session_bridge(url):
             else:st.session_state.account_clear=True
             st.rerun()
 
-def render_accounts():
+def restore_account():
     url=os.getenv('NEON_AUTH_BASE_URL',AUTH_URL).rstrip('/')
     session_bridge(url)
     user=st.session_state.get('account_user')
+    if not isinstance(user,dict) or not user.get('id') or not isinstance(user.get('expires'),(int,float)) or user['expires']<=time.time():
+        if user:
+            st.session_state.account_user=None;st.session_state.account_token=None
+            st.session_state.account_clear=True
+            clear_journey()
+        return None
+    return user
+
+def render_accounts(restore=True):
+    user=restore_account() if restore else st.session_state.get('account_user')
     if user:st.write(f"Welcome, {user['name']}! You’re logged in.")
     if st.session_state.get('account_notice'):st.info(st.session_state.account_notice)
     mode=st.session_state.view

@@ -1,5 +1,5 @@
 from pathlib import Path
-import gzip,json,shutil,tempfile,unittest
+import gzip,json,shutil,tempfile,unittest,time
 from datetime import datetime,timedelta
 from zoneinfo import ZoneInfo
 from unittest.mock import patch
@@ -15,7 +15,9 @@ class TestExpandedApp(unittest.TestCase):
         shutil.copyfile(ROOT/'app.py',self.root/'app.py')
         (self.root/'flight_catalog.json.gz').write_bytes(gzip.compress(json.dumps(build_catalog()).encode()))
         self.mock=patch.object(extractor,'extract_with_ai',side_effect=RuntimeError('offline'));self.mock.start()
-        self.app=AppTest.from_file(str(self.root/'app.py'),default_timeout=15).run()
+        self.app=AppTest.from_file(str(self.root/'app.py'),default_timeout=25).run()
+        self.app.session_state['account_user']={'id':'test-user','name':'Demo','email':'demo@example.com','expires':time.time()+900}
+        self.app.run()
     def tearDown(self):self.mock.stop();self.tmp.cleanup()
     def cards(self):return [m for m in self.app.markdown if '<div class="flight-card">' in m.value]
     def test_search_form_new_route_has_six_results(self):
