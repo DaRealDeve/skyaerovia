@@ -42,7 +42,7 @@ class PostgresBookingStore(BookingStore):
                 flight_json TEXT NOT NULL,passengers INTEGER NOT NULL CHECK(passengers BETWEEN 1 AND 6),
                 total NUMERIC NOT NULL CHECK(total>0),status TEXT NOT NULL CHECK(status IN ('confirmed','cancelled')),
                 created_at TEXT NOT NULL,cancelled_at TEXT,cabin TEXT NOT NULL DEFAULT 'Economy',
-                names_json TEXT,seats_json TEXT,pricing_json TEXT)''')
+                names_json TEXT,seats_json TEXT,pricing_json TEXT,owner_user_id TEXT)''')
             db.execute('''CREATE TABLE IF NOT EXISTS seat_holds (
                 flight_id TEXT NOT NULL,cabin TEXT NOT NULL,seat TEXT NOT NULL,reference TEXT NOT NULL,
                 PRIMARY KEY(flight_id,cabin,seat),FOREIGN KEY(reference) REFERENCES bookings(reference))''')
@@ -69,5 +69,5 @@ def booking_store(root):
 
 
 def storage_notice():
-    if database_url():return 'Demo reservations only. Save your reference and PDF. Tickets are stored separately from this app and survive app restarts.'
+    if database_url():return 'Demo reservations only. Tickets are saved to your account and appear on any device after login. Save your PDF too.'
     return 'Demo reservations only. Database connection is not configured; these temporary tickets may reset on restart. Save your PDF.'
