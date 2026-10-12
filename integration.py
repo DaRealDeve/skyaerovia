@@ -7,7 +7,7 @@ from search import search_flights
 
 CITIES = ("Delhi", "Mumbai", "Bengaluru", "Chennai", "Hyderabad", "Kolkata", "Pune", "Ahmedabad")
 FIELDS = ("origin", "destination", "date", "sort_by", "max_price", "non_stop")
-HELP = "Tell me your departure city, destination and date. You can request cheapest or fastest flights, a budget, or nonstop flights. This demo cannot book tickets."
+HELP = "Tell me your departure city, destination and date. You can request cheapest or fastest flights, a budget, or nonstop flights. Choose a flight card to create a demo ticket, or use Cancel a ticket with your saved reference. These are simulated reservations."
 
 
 def load_flights(path):

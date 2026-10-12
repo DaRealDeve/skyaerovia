@@ -1,3 +1,5 @@
+> Baseline documentation: this file describes the original deployed version. The first booking/cancellation upgrade is documented in [upgrade-plan.md](upgrade-plan.md). The saved baseline report/deck/video remain historical artifacts.
+
 # SkyAerovia demo walkthrough
 
 Video format: a captioned walkthrough using screenshots of the verified hosted app, captured on 12 October 2026. The video has no audio and is not a continuous screen recording. Use the narration below when presenting it. No API key appears in it.

@@ -1,3 +1,5 @@
+> Baseline documentation: this file describes the original deployed version. The first booking/cancellation upgrade is documented in [upgrade-plan.md](upgrade-plan.md). The saved baseline report/deck/video remain historical artifacts.
+
 # Hosted acceptance — 12 October 2026
 
 Public demo: https://skyaerovia.streamlit.app/

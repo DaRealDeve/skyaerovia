@@ -1,3 +1,5 @@
+> Baseline documentation: this file describes the original deployed version. The first booking/cancellation upgrade is documented in [upgrade-plan.md](upgrade-plan.md). The saved baseline report/deck/video remain historical artifacts.
+
 # How SkyAerovia works
 
 Skye is a flight-search chatbot in a Streamlit app. The app searches simulated data; it does not book tickets.

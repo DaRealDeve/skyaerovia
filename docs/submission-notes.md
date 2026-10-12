@@ -1,3 +1,5 @@
+> Baseline documentation: this file describes the original deployed version. The first booking/cancellation upgrade is documented in [upgrade-plan.md](upgrade-plan.md). The saved baseline report/deck/video remain historical artifacts.
+
 # Submission materials
 
 Tarun/Codex prepared these after technical and hosted checks passed:
