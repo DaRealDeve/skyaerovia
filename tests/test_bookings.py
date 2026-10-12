@@ -4,7 +4,10 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from bookings import BookingStore, IST, normalize_reference, ticket_text
+from bookings import BookingStore, IST, normalize_reference
+from ticket_pdf import ticket_pdf
+from pypdf import PdfReader
+from io import BytesIO
 
 NOW = datetime(2026,10,12,10,tzinfo=IST)
 FLIGHT = {'id':'F1','airline':'Demo Air','from':'Delhi','to':'Mumbai','date':'2026-10-13',
@@ -20,7 +23,7 @@ class TestBookings(unittest.TestCase):
     def test_reference_total_snapshot_and_reopen(self):
         flight=dict(FLIGHT); ticket=self.store.create(flight,2,'a'*32,NOW)
         self.assertRegex(ticket['reference'],r'^SKY-(?:[A-F0-9]{4}-){4}[A-F0-9]{4}$')
-        self.assertEqual(ticket['total'],7800)
+        self.assertEqual(ticket['total'],8190)
         flight['price']=1
         self.assertEqual(BookingStore(self.path).get(ticket['reference'])['flight']['price'],3900)
         self.assertEqual(normalize_reference(ticket['reference'].lower().replace('-',' ')),ticket['reference'])
@@ -61,6 +64,6 @@ class TestBookings(unittest.TestCase):
         with self.assertRaises(ValueError):self.create(quantity=2)
     def test_download_contains_actual_reference_and_current_status(self):
         one=self.create(); cancelled,_=self.store.cancel(one['reference'],NOW)
-        text=ticket_text(cancelled)
+        text=PdfReader(BytesIO(ticket_pdf(cancelled))).pages[0].extract_text()
         self.assertIn(one['reference'],text); self.assertIn('CANCELLED',text)
-        self.assertIn('Not valid for travel',text); self.assertNotIn('password',text.lower())
+        self.assertIn('NOT VALID FOR TRAVEL',text); self.assertNotIn('password',text.lower())

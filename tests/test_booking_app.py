@@ -12,7 +12,7 @@ from streamlit.testing.v1 import AppTest
 
 ROOT=Path(__file__).resolve().parents[1]
 
-class TestBookingApp(unittest.TestCase):
+class BookingAppFixture:
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory(); self.root=Path(self.tmp.name)
         shutil.copyfile(ROOT/'app.py',self.root/'app.py')
@@ -32,8 +32,9 @@ class TestBookingApp(unittest.TestCase):
         self.click('Confirm demo booking')
         return self.app.session_state['last_ticket']
     def store(self):return BookingStore(self.root/'.data/bookings.sqlite3')
+class TestBookingApp(BookingAppFixture, unittest.TestCase):
     def test_confirmation_yes_and_no_flow(self):
-        first=self.book(2); self.assertEqual(self.store().get(first)['total'],7800)
+        first=self.book(2); self.assertEqual(self.store().get(first)['total'],8190)
         self.click('Yes, book another ticket'); self.assertEqual(self.app.session_state['view'],'search')
         self.app.button(key='book_F2').click().run(); self.click('Confirm demo booking')
         second=self.app.session_state['last_ticket']; self.assertNotEqual(first,second)

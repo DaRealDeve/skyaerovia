@@ -2,7 +2,9 @@
 import secrets
 import sqlite3
 import streamlit as st
-from bookings import BookingStore, normalize_reference, ticket_text
+from bookings import BookingStore, normalize_reference
+from fares import CABINS, fare_quote, seat_label
+from ticket_pdf import ticket_pdf
 
 
 def navigate(view):
@@ -11,7 +13,7 @@ def navigate(view):
 
 def start_booking(flight_id):
     st.session_state.update(selected_flight=flight_id, booking_token=secrets.token_hex(16),
-                            last_ticket=None, passenger_count=1, view='booking')
+                            last_ticket=None, passenger_count=1, travel_class='Economy', view='booking')
 
 
 def another_ticket(yes):
@@ -32,12 +34,26 @@ def summary(ticket):
     st.code(ticket['reference'], language=None)
     st.write(f'**{f["airline"]} · {f["from"]} → {f["to"]}**')
     st.write(f'{f["date"]} · {f["departure"]} — {f["arrival"]} IST')
-    st.write(f'{ticket["passengers"]} passenger(s) · Sample total ₹{ticket["total"]:,}')
+    st.write(f'{ticket["passengers"]} passenger(s) · {ticket["cabin"]} · Demo total ₹{ticket["total"]:,.2f}')
+    for i,name in enumerate(ticket['passenger_names']):
+        seat = ticket['seats'][i] if i < len(ticket['seats']) else 'Not assigned'
+        st.write(f'{name} · Seat {seat}')
+    with st.expander('Fare and GST breakdown'):
+        show_quote(ticket['pricing'])
     st.write('Status: **' + ticket['status'].capitalize() + '**')
-    st.download_button('Download demo ticket', ticket_text(ticket),
-                       file_name=ticket['reference'] + '.txt', mime='text/plain',
+    st.download_button('Download ticket PDF', ticket_pdf(ticket),
+                       file_name=ticket['reference'] + '.pdf', mime='application/pdf',
                        key='download_' + ticket['reference'])
 
+
+
+def show_quote(quote):
+    st.write(f"Cabin fare: **₹{quote['subtotal_paise']/100:,.2f}**")
+    gst_label = f"GST ({quote['gst_percent']}%)" if quote['version'] == 2 else 'GST (not recorded on original ticket)'
+    st.write(f"{gst_label}: **₹{quote['gst_paise']/100:,.2f}**")
+    st.write(f"Other fees (not modelled): **₹{quote['other_fees_paise']/100:,.2f}**")
+    st.write(f"Demo total: **₹{quote['total_paise']/100:,.2f}**")
+    st.caption(quote['note'])
 
 def render_booking_page(root, flights):
     try:
@@ -75,14 +91,26 @@ def _render(store, flights):
         st.subheader('Review your demo booking')
         st.write(f'**{flight["airline"]} · {flight["from"]} → {flight["to"]}**')
         st.write(f'{flight["date"]} · {flight["departure"]} — {flight["arrival"]} IST')
-        st.write(f'Sample fare: **₹{flight["price"]:,} per passenger**')
+        cabin = st.radio('Travel class', list(CABINS), horizontal=True, key='travel_class')
         passengers = st.number_input('Passengers', min_value=1, max_value=6, step=1, key='passenger_count')
-        st.write(f'Sample total: **₹{flight["price"] * passengers:,}**')
+        st.caption('Cabin fares and seats are simulated. Choose a different seat for each passenger.')
+        available = store.available_seats(flight['id'], cabin)
+        if len(available) < passengers:
+            st.warning('Not enough demo seats remain in this class. Choose another class or flight.')
+            st.button('Back to flight results', on_click=navigate, args=('search',))
+            return
+        names, seats = [], []
+        token = st.session_state.booking_token
+        for i in range(passengers):
+            name_column, seat_column = st.columns(2)
+            names.append(name_column.text_input(f'Passenger {i+1} name (English)', value=f'Guest {i+1}', max_chars=60, key=f'name_{token}_{i}'))
+            seats.append(seat_column.selectbox(f'Seat for passenger {i+1}', available, index=i, format_func=seat_label, key=f'seat_{token}_{cabin}_{i}'))
+        show_quote(fare_quote(flight['price'], passengers, cabin))
         with st.form('confirm_demo', enter_to_submit=False):
             st.caption('This creates a simulated reservation. No payment is required.')
             if st.form_submit_button('Confirm demo booking', type='primary'):
                 try:
-                    ticket = store.create(flight, passengers, st.session_state.booking_token)
+                    ticket = store.create(flight, passengers, st.session_state.booking_token, cabin=cabin, passenger_names=names, seats=seats)
                 except (ValueError, RuntimeError) as error:
                     st.error(str(error))
                 else:
