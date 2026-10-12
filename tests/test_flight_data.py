@@ -24,8 +24,8 @@ class TestFlightData(unittest.TestCase):
     def test_sixty_flights_cover_eight_cities_and_seven_consecutive_days(self):
         self.assertEqual(len(self.records), 60)
         self.assertEqual(len({f["id"] for f in self.records}), 60)
-        self.assertEqual({f["from"] for f in self.records}, set(CITIES))
-        self.assertEqual({f["to"] for f in self.records}, set(CITIES))
+        self.assertEqual({f["from"] for f in self.records}, set(("Delhi","Mumbai","Bengaluru","Chennai","Hyderabad","Kolkata","Pune","Ahmedabad")))
+        self.assertEqual({f["to"] for f in self.records}, set(("Delhi","Mumbai","Bengaluru","Chennai","Hyderabad","Kolkata","Pune","Ahmedabad")))
         self.assertEqual({f["date"] for f in self.records},
                          {(self.first_day + timedelta(days=i)).isoformat() for i in range(7)})
 

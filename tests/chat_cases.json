@@ -518,7 +518,7 @@
   {
     "id": "T50",
     "category": "Unsupported city",
-    "message": "Delhi to Goa tomorrow",
+    "message": "Delhi to London tomorrow",
     "expected": {
       "status": "clarify",
       "asking": "destination"

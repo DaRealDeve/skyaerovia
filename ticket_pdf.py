@@ -9,7 +9,7 @@ from reportlab.graphics.barcode.qr import QrCodeWidget
 from fares import money
 
 ROOT=Path(__file__).resolve().parent
-CODES={'Delhi':'DEL','Mumbai':'BOM','Bengaluru':'BLR','Chennai':'MAA','Hyderabad':'HYD','Kolkata':'CCU','Pune':'PNQ','Ahmedabad':'AMD'}
+from city_catalog import CODES
 NAVY=colors.HexColor('#071B3A'); BLUE=colors.HexColor('#145DA0'); INK=colors.HexColor('#243B53')
 LIGHT=colors.HexColor('#EDF3FB'); MUTED=colors.HexColor('#526D82')
 
@@ -46,6 +46,7 @@ def ticket_pdf(ticket):
     fitted(46,286,f['id'],244,10)
     text(318,320,'TRAVEL DATE',9,True,MUTED);text(318,302,f['date'],13,True)
     text(318,282,f'{f["departure"]} - {f["arrival"]} IST',12)
+    if f.get("arrival_date",f["date"]) != f["date"]:text(318,267,"Arrival: "+f["arrival_date"],8,False,MUTED)
     c.setStrokeColor(colors.HexColor('#CCDAE8'));c.setDash(3,4);c.line(591,269,591,424);c.setDash()
     text(611,415,'BOOKING REFERENCE',9,True,MUTED)
     # Keep the human-readable reference separate from its QR, with no external URL.
@@ -70,6 +71,6 @@ def ticket_pdf(ticket):
     text(257,98,gst_label,9,False,MUTED);text(257,80,money(q['gst_paise']),13,True)
     text(430,98,'Other fees (not modelled)',9,False,MUTED);text(430,80,money(q['other_fees_paise']),13,True)
     right(781,98,'DEMO TOTAL',9,True,BLUE);right(781,78,money(q['total_paise']),20,True,NAVY)
-    text(46,132,'Keep this reference to find or cancel your demo booking. Records may reset after a hosted restart.',8,False,MUTED)
+    text(46,132,'Save this reference to find or cancel your demo reservation in SkyAerovia.',8,False,MUTED)
     text(30,20,'Tax estimate for current domestic demo fares. Not a tax invoice. No payment was taken.',8,False,MUTED)
     c.showPage();c.save();return output.getvalue()

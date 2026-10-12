@@ -48,7 +48,7 @@ class TestApp(unittest.TestCase):
         app.chat_input[0].set_value("Delhi to Mumbai today").run()
         self.assertEqual(len(app.exception),0)
         self.assertIn("2 simulated",app.session_state["messages"][-1]["content"])
-        app.selectbox[1].select("Nonstop only").run()
+        app.selectbox(key="stops_choice").select("Nonstop only").run()
         self.assertEqual(len(app.exception),0)
         cards = [m.value for m in app.markdown if '<div class="flight-card">' in m.value]
         self.assertEqual(len(cards), 1)
@@ -73,7 +73,7 @@ class TestApp(unittest.TestCase):
         (self.root / "flights.json").write_text(json.dumps(records))
         app = self.app()
         app.chat_input[0].set_value("cheapest Delhi to Mumbai today under 6000").run()
-        app.selectbox[0].select("Shortest duration").run()
+        app.selectbox(key="sort_choice").select("Shortest duration").run()
         cards = [m.value for m in app.markdown if '<div class="flight-card">' in m.value]
         self.assertIn("FAST", cards[0])
         app.checkbox[0].check().run()
@@ -82,8 +82,8 @@ class TestApp(unittest.TestCase):
         self.assertEqual(len(cards), 1)
         self.assertIn("CHEAP", cards[0])
         app.button(key="clear_chat").click().run()
-        self.assertEqual(app.selectbox[0].value, "Use chat preference")
-        self.assertEqual(app.selectbox[1].value, "Use chat preference")
+        self.assertEqual(app.selectbox(key="sort_choice").value, "Use chat preference")
+        self.assertEqual(app.selectbox(key="stops_choice").value, "Use chat preference")
         self.assertFalse(app.checkbox[0].value)
         self.assertEqual(app.session_state["request"], {})
 

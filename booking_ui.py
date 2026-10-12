@@ -2,7 +2,9 @@
 import secrets
 import sqlite3
 import streamlit as st
-from bookings import BookingStore, normalize_reference
+from bookings import normalize_reference
+from storage import booking_store, storage_notice, StorageError
+from schedule import find_flight
 from fares import CABINS, fare_quote, seat_label
 from ticket_pdf import ticket_pdf
 
@@ -11,9 +13,9 @@ def navigate(view):
     st.session_state.view = view
 
 
-def start_booking(flight_id):
+def start_booking(flight_id, cabin="Economy"):
     st.session_state.update(selected_flight=flight_id, booking_token=secrets.token_hex(16),
-                            last_ticket=None, passenger_count=1, travel_class='Economy', view='booking')
+                            last_ticket=None, passenger_count=1, travel_class=cabin, view='booking')
 
 
 def another_ticket(yes):
@@ -31,9 +33,11 @@ def set_cancel_confirmation(value):
 
 def summary(ticket):
     f = ticket['flight']
+    st.markdown('**Your booking reference**')
     st.code(ticket['reference'], language=None)
     st.write(f'**{f["airline"]} · {f["from"]} → {f["to"]}**')
     st.write(f'{f["date"]} · {f["departure"]} — {f["arrival"]} IST')
+    if f.get('arrival_date',f['date']) != f['date']:st.caption('Arrives '+f['arrival_date']+' (next day)')
     st.write(f'{ticket["passengers"]} passenger(s) · {ticket["cabin"]} · Demo total ₹{ticket["total"]:,.2f}')
     for i,name in enumerate(ticket['passenger_names']):
         seat = ticket['seats'][i] if i < len(ticket['seats']) else 'Not assigned'
@@ -57,9 +61,9 @@ def show_quote(quote):
 
 def render_booking_page(root, flights):
     try:
-        store = BookingStore(root / '.data' / 'bookings.sqlite3')
+        store = booking_store(root)
         _render(store, flights)
-    except (sqlite3.Error, OSError):
+    except (sqlite3.Error, OSError, StorageError):
         st.error('Demo tickets are temporarily unavailable. Please try again shortly.')
     except ValueError as error:
         st.warning(str(error))
@@ -67,7 +71,7 @@ def render_booking_page(root, flights):
 
 def _render(store, flights):
     view = st.session_state.view
-    st.caption('Demo reservations only. Keep your downloaded reference; records may reset when the app restarts or is redeployed.')
+    st.caption(storage_notice())
     if view == 'booking':
         reference = st.session_state.last_ticket
         if reference:
@@ -83,14 +87,16 @@ def _render(store, flights):
             yes.button('Yes, book another ticket', on_click=another_ticket, args=(True,), use_container_width=True)
             no.button("No, I’m done", on_click=another_ticket, args=(False,), use_container_width=True)
             return
-        flight = next((f for f in (flights or []) if f['id'] == st.session_state.selected_flight), None)
+        flight = find_flight(flights, st.session_state.selected_flight)
         if not flight:
             st.warning('Please choose a flight from the search results first.')
             st.button('Find flights', on_click=navigate, args=('search',), key='review_find')
             return
         st.subheader('Review your demo booking')
+        st.caption('1 · Flight selected   →   2 · Class & passengers   →   3 · Confirm & download')
         st.write(f'**{flight["airline"]} · {flight["from"]} → {flight["to"]}**')
         st.write(f'{flight["date"]} · {flight["departure"]} — {flight["arrival"]} IST')
+        if flight.get('arrival_date',flight['date']) != flight['date']:st.caption('Arrives '+flight['arrival_date']+' (next day)')
         cabin = st.radio('Travel class', list(CABINS), horizontal=True, key='travel_class')
         passengers = st.number_input('Passengers', min_value=1, max_value=6, step=1, key='passenger_count')
         st.caption('Cabin fares and seats are simulated. Choose a different seat for each passenger.')

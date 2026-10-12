@@ -113,6 +113,8 @@ _CITY_NAMES = {
     "Singapore": ["sin"],
     "London": ["lhr"],
 }
+from city_catalog import EXTRA_ALIASES
+_CITY_NAMES.update(EXTRA_ALIASES)
 # alias (lowercase) -> canonical name; the canonical names map to themselves
 CITY_ALIASES = {
     alias: canon

@@ -4,7 +4,7 @@ Result: **50/50 passed; 0 failed.**
 
 Scope: deterministic offline keyword fallback plus the integration adapter. Fixed reference date: 2026-10-11 (IST). No API key or live Gemini call was used. Cases check status and the listed expected fields; passing does not guarantee every possible field is correct.
 
-Retest after the extractor/frontend/data integration. The original baseline was 43/50. The PDF/cabin upgrade unittest round ran 112 checks: 111 passed and one live test skipped locally. All 50 cases also pass through the complete Streamlit UI with simulated data. Hosted acceptance and a semantic Gemini-versus-keyword control passed on 12 October 2026; see docs/deployment-checks.md. This offline run does not make a live API call.
+Retest after the extractor/frontend/data integration. The original baseline was 43/50. The expanded schedule/storage unittest round ran 124 checks: 123 passed and one live test skipped locally. All 50 cases also pass through the complete Streamlit UI with simulated data. Hosted acceptance and a semantic Gemini-versus-keyword control passed on 12 October 2026; see docs/deployment-checks.md. This offline run does not make a live API call.
 
 ## Results
 
@@ -59,7 +59,7 @@ Retest after the extractor/frontend/data integration. The original baseline was 
 | T47 | Date typo | Delhi to Mumbai tomorow | PASS |
 | T48 | Past date | Delhi to Mumbai 2026-10-05 | PASS |
 | T49 | Invalid date | Delhi to Mumbai 2026-02-30 | PASS |
-| T50 | Unsupported city | Delhi to Goa tomorrow | PASS |
+| T50 | Unsupported city | Delhi to London tomorrow | PASS |
 
 ## Failures to resolve before final acceptance
 
