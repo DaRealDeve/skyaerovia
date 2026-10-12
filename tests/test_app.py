@@ -1,4 +1,5 @@
 import json
+import time
 import shutil
 import tempfile
 import unittest
@@ -27,6 +28,8 @@ class TestApp(unittest.TestCase):
 
     def app(self):
         app = AppTest.from_file(str(self.root / "app.py"), default_timeout=10).run()
+        app.session_state['account_user']={'id':'test-user','name':'Demo','email':'demo@example.com','expires':time.time()+900}
+        app.run()
         self.assertEqual(len(app.exception),0)
         return app
 

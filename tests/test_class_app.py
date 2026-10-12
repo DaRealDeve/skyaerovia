@@ -18,7 +18,7 @@ class TestClassApp(BookingAppFixture, unittest.TestCase):
         assistant=self.app.chat_message[0]
         self.assertTrue(any('Namaste!' in m.value for m in assistant.markdown))
         labels=[b.label for b in assistant.button]
-        self.assertEqual(labels,['Log in','Register','Find flights','My demo tickets','Cancel a ticket'])
+        self.assertEqual(labels,['Find flights','My demo tickets','Cancel a ticket'])
     def test_invalid_name_blocks_creation_gracefully(self):
         self.app.chat_input[0].set_value('Delhi to Mumbai tomorrow').run();self.app.button(key='book_F1').click().run()
         self.app.text_input[0].set_value('<script>').run();self.click('Confirm demo booking')
