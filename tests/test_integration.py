@@ -68,7 +68,7 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual((status,state["asking"],state["date"]),("clarify","date",None))
 
     def test_unsupported_city_prompts_again(self):
-        state, status, _ = self.prepare({**STATE,"destination":"Goa"})
+        state, status, _ = self.prepare({**STATE,"destination":"London"})
         self.assertEqual((status,state["destination"]),("clarify",None))
 
     def test_departure_sort_cannot_reach_search(self):

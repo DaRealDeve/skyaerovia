@@ -38,6 +38,7 @@ def validate_names(names, passengers):
 
 
 class BookingStore:
+    integrity_error=sqlite3.IntegrityError
     def __init__(self,path):
         self.path=Path(path);self.path.parent.mkdir(parents=True,exist_ok=True)
         with self.connect() as db:
@@ -107,7 +108,10 @@ class BookingStore:
         layout=cabin_seats(cabin);names=validate_names(passenger_names,passengers)
         if seats is not None and (not isinstance(seats,list) or len(seats)!=passengers or any(not isinstance(s,str) for s in seats) or len(set(seats))!=passengers or any(s not in layout for s in seats)):
             raise ValueError('Choose a different available seat for every passenger.')
-        encoded=json.dumps({k:flight[k] for k in keys},sort_keys=True,ensure_ascii=False)
+        snapshot={k:flight[k] for k in keys}
+        if 'arrival_date' in flight:
+            snapshot['arrival_date']=flight['arrival_date']
+        encoded=json.dumps(snapshot,sort_keys=True,ensure_ascii=False)
         now=now or datetime.now(IST)
         with self.connect() as db:
             db.execute('BEGIN IMMEDIATE')
@@ -126,12 +130,17 @@ class BookingStore:
             pricing=fare_quote(flight['price'],passengers,cabin)
             for _ in range(5):
                 raw=secrets.token_hex(10).upper();reference='SKY-'+'-'.join(raw[i:i+4] for i in range(0,20,4))
+                db.execute('SAVEPOINT reference_attempt')
                 try:
                     db.execute('''INSERT INTO bookings
                         (reference,request_token,flight_json,passengers,total,status,created_at,cancelled_at,cabin,names_json,seats_json,pricing_json)
                         VALUES (?,?,?,?,?,'confirmed',?,NULL,?,?,?,?)''',
                         (reference,request_token,encoded,passengers,pricing['total_paise']/100,now.isoformat(),cabin,json.dumps(names),json.dumps(selected),json.dumps(pricing)))
-                except sqlite3.IntegrityError:continue
+                except self.integrity_error:
+                    db.execute('ROLLBACK TO SAVEPOINT reference_attempt')
+                    db.execute('RELEASE SAVEPOINT reference_attempt')
+                    continue
+                db.execute('RELEASE SAVEPOINT reference_attempt')
                 db.executemany('INSERT INTO seat_holds VALUES (?,?,?,?)',[(flight['id'],cabin,s,reference) for s in selected])
                 return self.unpack(db.execute('SELECT * FROM bookings WHERE reference = ?',(reference,)).fetchone())
             raise RuntimeError('A demo reference could not be created. Please try again.')

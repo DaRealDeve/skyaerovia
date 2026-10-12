@@ -46,3 +46,7 @@ Saved previous stage: **checkpoint/booking-2026-10-12** at **6a745ea992b97762747
 Implemented: three booking classes; simulated reserved seats and release on cancellation; original logo-branded PDF downloads; fixed fare/GST snapshots; vertical actions under Skye's greeting. Verification: 112 tests, 111 pass, one private-key check skipped locally; adapter 50/50 and full UI 50/50. Details are in `pdf-ticket-upgrade.md`.
 
 Login/registration, the next video and updated PPT remain deferred at Tarun's request.
+
+## Expanded route and storage stage
+
+32 cities; all 992 directed city pairs; six departures per route/day; six airline names; rolling 90 days; explicit overnight arrival dates. The app materializes only a searched route/date from the compressed catalog. Direct search form, cabin/airline/time filters, transparent tax-inclusive cards and clearer empty states are included. PostgreSQL stores confirmed and cancelled tickets outside Streamlit; a configured database failure never silently changes storage backend. See `expanded-schedule-storage.md`. Login/registration and updated report/PPT/video remain deferred. Pre-stage rollback checkpoint: `checkpoint/pdf-tickets-2026-10-12` at `d62c70ba03ae847a656fb3930f414f4badac32a9`.

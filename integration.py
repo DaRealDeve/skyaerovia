@@ -5,7 +5,7 @@ from datetime import date
 from pathlib import Path
 from search import search_flights
 
-CITIES = ("Delhi", "Mumbai", "Bengaluru", "Chennai", "Hyderabad", "Kolkata", "Pune", "Ahmedabad")
+from city_catalog import CITIES
 FIELDS = ("origin", "destination", "date", "sort_by", "max_price", "non_stop")
 HELP = "Tell me your departure city, destination and date. You can request cheapest or fastest flights, a budget, or nonstop flights. Choose a flight card to create a demo ticket, or use Cancel a ticket with your saved reference. These are simulated reservations."
 
@@ -112,6 +112,8 @@ def prepare_request(message, context, today, extract):
 
 
 def find_matches(flights, state, sort_override=None, budget_override=None, stops_override=None):
+    if hasattr(flights, "for_route"):
+        flights = flights.for_route(state["origin"], state["destination"], state["date"])
     return search_flights(
         flights, state["origin"], state["destination"], state["date"],
         sort_by=sort_override or state.get("sort_by") or "price",
