@@ -27,6 +27,10 @@ st.markdown("""
 }
 .hero h1 { color: white; font-size: clamp(28px, 4vw, 42px); padding-top: 0; }
 .hero p { color: #E3EEFF; font-size: 17px; margin-bottom: 0; }
+.st-key-quick_actions button { color: #145DA0; background: #FFFFFF; border: 1px solid #E0E8F2; justify-content: flex-start; min-height: 46px; }
+.st-key-quick_actions button > div, .st-key-quick_actions button span { width: 100%; }
+.st-key-quick_actions button p { width: 100%; text-align: left; font-size: 1rem; font-weight: 600; color: #145DA0; }
+.st-key-quick_actions button:hover { background: #EAF1FA; border-color: #145DA0; }
 .flight-card {
     background: white; padding: 22px; border: 1px solid #D8E4F2;
     border-radius: 14px; margin-bottom: 14px; color: #102A43;
@@ -97,7 +101,7 @@ with st.sidebar:
     sort_override = {"Lowest price": "price", "Shortest duration": "duration"}.get(sort_choice)
     use_budget = st.checkbox("Set maximum price", key="budget_enabled")
     budget_override = st.number_input(
-        "Maximum price (₹)", min_value=1, value=5000, step=500, key="budget_value"
+        "Maximum base fare (₹)", min_value=1, value=5000, step=500, key="budget_value"
     ) if use_budget else None
     stops_choice = st.selectbox(
         "Stops", ["Use chat preference", "Nonstop only", "Allow stops"], key="stops_choice"
@@ -114,14 +118,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 st.caption("Student demo · Simulated flights and reservations · No payments")
-st.write("**What would you like to do?**")
-search_action, tickets_action, cancel_action = st.columns(3)
-search_action.button("Find flights", key="nav_search", on_click=navigate, args=("search",), use_container_width=True)
-tickets_action.button("My demo tickets", key="nav_tickets", on_click=navigate, args=("tickets",), use_container_width=True)
-cancel_action.button("Cancel a ticket", key="nav_cancel", on_click=open_cancellation, use_container_width=True)
-if st.session_state.view != "search":
-    render_booking_page(ROOT, flights)
-    st.stop()
+
 if flights:
     first_date = min(f["date"] for f in flights)
     last_date = max(f["date"] for f in flights)
@@ -131,7 +128,17 @@ if flights:
     elif first_date > today.isoformat():
         st.info(f"The sample schedule starts on {first_date}. Choose a date in the displayed range.")
 st.subheader("Chat with Skye")
-for message in st.session_state.messages:
+with st.chat_message("assistant"):
+    st.write(GREETING)
+    with st.container(border=True, key="quick_actions"):
+        st.write("**What would you like to do next?**")
+        st.button("Find flights", key="nav_search", on_click=navigate, args=("search",), use_container_width=True)
+        st.button("My demo tickets", key="nav_tickets", on_click=navigate, args=("tickets",), use_container_width=True)
+        st.button("Cancel a ticket", key="nav_cancel", on_click=open_cancellation, use_container_width=True)
+if st.session_state.view != "search":
+    render_booking_page(ROOT, flights)
+    st.stop()
+for message in st.session_state.messages[1:]:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
@@ -189,6 +196,7 @@ if flights is not None and st.session_state.results:
             <p>{day} · {departure} — {arrival} IST</p>
             <p class="detail">{flight['duration']} minutes · {stops}</p>
             <p class="fare">₹{flight['price']:,}</p>
+            <p class="detail">Economy base fare, before GST. Choose your travel class when booking.</p>
         </div>
         """, unsafe_allow_html=True)
         departed = departure_time(flight) <= datetime.now(ZoneInfo("Asia/Kolkata"))

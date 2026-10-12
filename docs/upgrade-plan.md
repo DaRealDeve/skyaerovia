@@ -23,9 +23,9 @@ These are simulated reservations, not airline tickets. No payment or refund occu
 ## Next stages in the agreed order
 
 - More departure cities and destinations, with consistent search, extraction and simulated data.
-- Economy, Premium Economy and Business fares and class filters.
+- Economy, Premium Economy and Business booking choices: implemented in the PDF ticket stage; search budgets still use base fares.
 - More airlines and flight choices.
-- Larger frontend improvements and a better seat-selection design; do not reuse the old A1–A10 list pattern.
+- Larger frontend improvements. Row-first seat selection with window/aisle descriptions is implemented; the old A1–A10 pattern was not reused.
 - Login and registration last, with suitable permanent storage and secure ownership.
 
 No school-project code, bus/car modes, old plaintext-password pattern or legacy seat list was reused.
@@ -38,3 +38,11 @@ No school-project code, bus/car modes, old plaintext-password pattern or legacy 
 - New coverage includes concurrent/repeated confirmations, unique references, preserved snapshots, invalid/unknown IDs, cancelled status, confirmation versus keeping a booking, both more-ticket choices, a new browser session and chat-triggered cancellation.
 
 Manual local browser checks passed: a two-passenger INR 7,800 booking, reference generation, actual text-ticket download, No returning to the ticket list, Keep my booking preserving Confirmed status, and final cancellation displaying Cancelled. Hosted evidence is recorded after publication. These results do not assert that errors are impossible or that 50 cases were tested against live Gemini.
+
+## PDF ticket stage
+
+Saved previous stage: **checkpoint/booking-2026-10-12** at **6a745ea992b9776274792663ae459a91c89e966f**. To restore, make a new main commit using its tree or temporarily point Streamlit at that checkpoint branch. Leave the private Secrets unchanged. Source restoration does not restore temporary demo reservations.
+
+Implemented: three booking classes; simulated reserved seats and release on cancellation; original logo-branded PDF downloads; fixed fare/GST snapshots; vertical actions under Skye's greeting. Verification: 112 tests, 111 pass, one private-key check skipped locally; adapter 50/50 and full UI 50/50. Details are in `pdf-ticket-upgrade.md`.
+
+Login/registration, the next video and updated PPT remain deferred at Tarun's request.

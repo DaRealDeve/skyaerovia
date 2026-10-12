@@ -3,7 +3,7 @@
 
 **Public demo: [Open SkyAerovia](https://skyaerovia.streamlit.app/)** — deployed and checked on 12 October 2026. The demo is public; the repository and API key remain private.
 
-The app combines Richa's navy/blue interface, Ayman's Gemini extractor with keyword fallback, Sakshi's search logic and 60 simulated flights prepared by Tarun/Codex. It asks for missing details, retains travel preferences, filters by route/date/budget/stops and sorts by price or duration. Flight cards, the logo, loading feedback and a complete chat/filter reset are included. The app can now create simulated demo reservations, download a reference ticket, and cancel a demo ticket after explicit confirmation. It does not create real airline bookings or process payments.
+The app combines Richa's navy/blue interface, Ayman's Gemini extractor with keyword fallback, Sakshi's search logic and 60 simulated flights prepared by Tarun/Codex. It asks for missing details, retains travel preferences, filters by route/date/budget/stops and sorts by price or duration. Flight cards, the logo, loading feedback and a complete chat/filter reset are included. The app can now create simulated demo reservations, download a branded PDF ticket, and cancel a demo ticket after explicit confirmation. It does not create real airline bookings or process payments.
 
 ## Run locally
 Use Python 3.12 from the project folder:
@@ -35,12 +35,13 @@ The hosted app reads the committed file and displays the date range. It does not
 
 ## Verification
 ```sh
+python -m pip install -r requirements-dev.txt
 python -m unittest discover -s tests -v
 python scripts/run_chat_checks.py
 python scripts/run_ui_chat_checks.py
 ```
 
-Latest upgrade result: **97 tests run, 96 passed, one real-key test skipped**. The new booking tests cover unique references, repeated/concurrent confirmations, record reopening, invalid IDs, cancellation confirmation, preserved tickets after chat reset, and both book-another choices. All **50/50** fixed-date conversation cases pass both through the integration adapter and the complete Streamlit UI. Tests cover search, extraction, validation, dataset values and dates, filters, follow-ups, reset and HTML escaping. The 50-case fixtures use 2026-10-11 intentionally; production uses today's IST date. The original flight-search regression cases also pass after adding the booking flow.
+Latest upgrade result: **112 tests run, 111 passed, one real-key test skipped**. The booking tests cover class fares and GST rounding, PDF contents, seat conflicts, migration of old records, unique references, repeated/concurrent confirmations, record reopening, invalid IDs, cancellation confirmation, preserved tickets after chat reset, and both book-another choices. All **50/50** fixed-date conversation cases pass both through the integration adapter and the complete Streamlit UI. Tests cover search, extraction, validation, dataset values and dates, filters, follow-ups, reset and HTML escaping. The 50-case fixtures use 2026-10-11 intentionally; production uses today's IST date. The original flight-search regression cases also pass after adding the booking flow.
 
 Ayman supplied a successful real Gemini test screenshot (`source=ai`) on 11 October and Tarun relayed old-key deletion confirmation. No real key was used in the local integration review. For a future key change, verify a local private key without accepting fallback as success:
 
@@ -59,16 +60,24 @@ The team retains all seven members. Richa supplied the frontend, Sakshi the sear
 After the technical checks, Tarun/Codex prepared an eight-page report, editable ten-slide presentation, app screenshots, captioned MP4 walkthrough and presentation script. See `docs/team-responsibilities.md`, `docs/how-it-works.md`, `docs/demo-script.md` and `docs/submission-notes.md`.
 
 
-## Demo bookings — first upgrade
+## Demo bookings, travel classes and PDF tickets
 
-Use **Find flights** → select **Book demo ticket** → choose passenger count → **Confirm demo booking**. Each confirmed reservation gets a unique SKY reference and a downloadable text ticket. The app then asks whether you want another ticket, with Yes and No buttons. **My demo tickets** lists tickets created in the current browser session. Clear chat keeps those tickets.
+Use **Find flights** → select **Book demo ticket** → choose Economy, Premium Economy or Business → enter demo passenger names and select seats → **Confirm demo booking**. Each confirmed reservation gets a unique SKY reference and a downloadable PDF ticket with logo, passenger names, class, seats, route, reference and QR code. The app then asks whether you want another ticket, with Yes and No buttons. **My demo tickets** lists tickets created in the current browser session. Clear chat keeps those tickets.
 
 Use **Cancel a ticket** → paste the reference → **Find ticket** → review the details → **Cancel this demo booking** → **Yes, cancel booking**. **Keep my booking** leaves the ticket confirmed. A cancelled ticket stays in the records as Cancelled. The reference can be used from a new session while the server record exists.
 
-Demo reservations are stored in the ignored `.data/bookings.sqlite3` file. This is temporary hosting storage and can be reset by a restart or redeployment. It is not durable production storage. No passenger names, passwords, payments or real seat inventory are collected in this stage. The SKY ID is a demo reference, not an airline PNR.
+Demo reservations are stored in the ignored `.data/bookings.sqlite3` file. This is temporary hosting storage and can be reset by a restart or redeployment. It is not durable production storage. Use demo passenger names; no passwords, payments or real airline seat inventory are collected. Simulated seats use row-first labels such as 12A (Window), 6C (Aisle) or 1F (Window). A confirmed booking reserves its simulated seats; cancellation releases them. The SKY ID is a demo reference, not an airline PNR.
 
 ## Saved working base and next stages
 
 The original working base is preserved at branch **checkpoint/base-2026-10-12**, commit **c6de816cbe36ab1ac3f31eb5fcccbfa03e0dfd05**, plus a separate source ZIP delivered to Tarun. See `docs/upgrade-plan.md` for restoration and scope.
 
-Next: more destinations/routes, Economy/Premium Economy/Business, more airline options and a larger frontend redesign. Login and registration are explicitly last. The old school Python project was used only as a visual feature example; none of its code was read, imported or copied.
+The booking stage is also saved at **checkpoint/booking-2026-10-12**, commit **6a745ea992b9776274792663ae459a91c89e966f**, for rollback before this PDF/class update.
+
+Next: more destinations/routes, more airline options and a larger frontend redesign. Login and registration are explicitly last. A new demo video and updated slides are deferred until these features are finished. The old school Python project was used only as a visual feature example; none of its code was read, imported or copied.
+
+## Demo pricing and taxes
+
+The search cards and chat budget refer to the Economy base fare. Booking uses illustrative class multipliers: Economy 1.00, Premium Economy 1.45, Business 2.20. These are demo pricing rules, not airline quotes. The booking screen and PDF show cabin fare, GST, other fees and total. Economy uses 5% GST; Premium Economy and Business use 18%, following the [government GST FAQ, question 59](https://www.pib.gov.in/PressReleasePage.aspx?PRID=2163560&lang=2&reg=48). This estimate covers the current domestic demo routes. Other fees are zero because they have not been modelled; airport and carrier fees are not invented. All amounts are rounded to paise and frozen on confirmation. Older demo tickets retain their original recorded fare.
+
+Quick choices sit directly below Skye's greeting: **Find flights**, **My demo tickets**, **Cancel a ticket**. These open the guided flows. The ticket is a simulated reservation, not an airline boarding pass or tax invoice. See `docs/pdf-ticket-upgrade.md`.
